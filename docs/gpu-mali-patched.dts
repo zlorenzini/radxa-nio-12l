@@ -1,0 +1,183 @@
+/dts-v1/;
+
+/*
+ * gpu-mali.dtbo — patched for Radxa NIO 12L
+ *
+ * Fix: mali_sram-supply changed from mt6359_vsram_others_ldo_reg
+ *      to mt6315_7_vbuck1 (same physical regulator as mali-supply).
+ *
+ * Original had: mt6359_vsram_others_ldo_reg → mali_sram-supply
+ *   which caused devfreq to fail OPP transition registration at boot
+ *   ("Couldn't update frequency transition information").
+ *
+ * Both mali-supply and mali_sram-supply now reference mt6315_7_vbuck1
+ * (Vgpu on the MT6315 PMIC). The regulator framework satisfies both
+ * consumers; effective voltage = max(vgpu_opp, vsram_opp) = 750 mV.
+ */
+
+/ {
+	compatible = "mediatek,mt8195";
+
+	fragment@0 {
+		target-path = "/soc";
+
+		__overlay__ {
+
+			mali@13000000 {
+				compatible = "mediatek,mt8195-mali\0arm,mali-midgard";
+				reg = <0x00 0x13000000 0x00 0x4000>;
+				interrupts = <0x00 0x18b 0x04 0x00 0x00 0x18c 0x04
+				              0x00 0x00 0x18d 0x04 0x00>;
+				interrupt-names = "GPU\0MMU\0JOB";
+				clocks = <0xffffffff 0x74
+				          0xffffffff 0x15
+				          0xffffffff 0x15
+				          0xffffffff 0x14
+				          0xffffffff 0x00>;
+				clock-names = "clk_mux\0clk_pll_src\0clk_main_parent\0clk_sub_parent\0subsys_bg3d";
+				operating-points-v2 = <0x01>;
+				power-domains = <0xffffffff 0x0a
+				                 0xffffffff 0x0b
+				                 0xffffffff 0x0c
+				                 0xffffffff 0x0d
+				                 0xffffffff 0x0e>;
+				power-domain-names = "core0\0core1\0core2\0core3\0core4";
+				supply-names = "mali\0mali_sram";
+				mali-supply = <0xffffffff>;
+				mali_sram-supply = <0xffffffff>;
+				phandle = <0x02>;
+			};
+
+			opp_table0 {
+				compatible = "operating-points-v2\0operating-points-v2-mali";
+				opp-shared;
+				phandle = <0x01>;
+
+				opp-390000000 {
+					opp-hz = <0x00 0x173eed80>;
+					opp-hz-real = <0x00 0x173eed80 0x00 0x173eed80>;
+					opp-microvolt = <0x98968 0xb71b0>;
+				};
+
+				opp-410000000 {
+					opp-hz = <0x00 0x18701a80>;
+					opp-hz-real = <0x00 0x18701a80 0x00 0x18701a80>;
+					opp-microvolt = <0x9a1d2 0xb71b0>;
+				};
+
+				opp-431000000 {
+					opp-hz = <0x00 0x19b089c0>;
+					opp-hz-real = <0x00 0x19b089c0 0x00 0x19b089c0>;
+					opp-microvolt = <0x9a1d2 0xb71b0>;
+				};
+
+				opp-473000000 {
+					opp-hz = <0x00 0x1c316840>;
+					opp-hz-real = <0x00 0x1c316840 0x00 0x1c316840>;
+					opp-microvolt = <0x9ba3c 0xb71b0>;
+				};
+
+				opp-515000000 {
+					opp-hz = <0x00 0x1eb246c0>;
+					opp-hz-real = <0x00 0x1eb246c0 0x00 0x1eb246c0>;
+					opp-microvolt = <0x9ba3c 0xb71b0>;
+				};
+
+				opp-556000000 {
+					opp-hz = <0x00 0x2123e300>;
+					opp-hz-real = <0x00 0x2123e300 0x00 0x2123e300>;
+					opp-microvolt = <0x9d2a6 0xb71b0>;
+				};
+
+				opp-598000000 {
+					opp-hz = <0x00 0x23a4c180>;
+					opp-hz-real = <0x00 0x23a4c180 0x00 0x23a4c180>;
+					opp-microvolt = <0x9eb10 0xb71b0>;
+				};
+
+				opp-640000000 {
+					opp-hz = <0x00 0x2625a000>;
+					opp-hz-real = <0x00 0x2625a000 0x00 0x2625a000>;
+					opp-microvolt = <0x9eb10 0xb71b0>;
+				};
+
+				opp-670000000 {
+					opp-hz = <0x00 0x27ef6380>;
+					opp-hz-real = <0x00 0x27ef6380 0x00 0x27ef6380>;
+					opp-microvolt = <0xa1be4 0xb71b0>;
+				};
+
+				opp-700000000 {
+					opp-hz = <0x00 0x29b92700>;
+					opp-hz-real = <0x00 0x29b92700 0x00 0x29b92700>;
+					opp-microvolt = <0xa4cb8 0xb71b0>;
+				};
+
+				opp-730000000 {
+					opp-hz = <0x00 0x2b82ea80>;
+					opp-hz-real = <0x00 0x2b82ea80 0x00 0x2b82ea80>;
+					opp-microvolt = <0xa7d8c 0xb71b0>;
+				};
+
+				opp-760000000 {
+					opp-hz = <0x00 0x2d4cae00>;
+					opp-hz-real = <0x00 0x2d4cae00 0x00 0x2d4cae00>;
+					opp-microvolt = <0xaae60 0xb71b0>;
+				};
+
+				opp-790000000 {
+					opp-hz = <0x00 0x2f167180>;
+					opp-hz-real = <0x00 0x2f167180 0x00 0x2f167180>;
+					opp-microvolt = <0xadf34 0xb71b0>;
+				};
+
+				opp-820000000 {
+					opp-hz = <0x00 0x30e03500>;
+					opp-hz-real = <0x00 0x30e03500 0x00 0x30e03500>;
+					opp-microvolt = <0xb1008 0xb71b0>;
+				};
+
+				opp-850000000 {
+					opp-hz = <0x00 0x32a9f880>;
+					opp-hz-real = <0x00 0x32a9f880 0x00 0x32a9f880>;
+					opp-microvolt = <0xb40dc 0xb71b0>;
+				};
+
+				opp-880000000 {
+					opp-hz = <0x00 0x3473bc00>;
+					opp-hz-real = <0x00 0x3473bc00 0x00 0x3473bc00>;
+					opp-microvolt = <0xb71b0 0xb71b0>;
+				};
+			};
+		};
+	};
+
+	__symbols__ {
+		gpu = "/fragment@0/__overlay__/mali@13000000";
+		gpu_opp_table = "/fragment@0/__overlay__/opp_table0";
+	};
+
+	__fixups__ {
+		topckgen = "/fragment@0/__overlay__/mali@13000000:clocks:0\0/fragment@0/__overlay__/mali@13000000:clocks:24";
+		apmixedsys = "/fragment@0/__overlay__/mali@13000000:clocks:8\0/fragment@0/__overlay__/mali@13000000:clocks:16";
+		mfgcfg = "/fragment@0/__overlay__/mali@13000000:clocks:32";
+		spm = "/fragment@0/__overlay__/mali@13000000:power-domains:0\0/fragment@0/__overlay__/mali@13000000:power-domains:8\0/fragment@0/__overlay__/mali@13000000:power-domains:16\0/fragment@0/__overlay__/mali@13000000:power-domains:24\0/fragment@0/__overlay__/mali@13000000:power-domains:32";
+		/* Both mali-supply and mali_sram-supply now use mt6315_7_vbuck1 (Vgpu).
+		 * Previously mali_sram-supply used mt6359_vsram_others_ldo_reg, which
+		 * caused devfreq OPP transition registration to fail at boot. */
+		mt6315_7_vbuck1 = "/fragment@0/__overlay__/mali@13000000:mali-supply:0\0/fragment@0/__overlay__/mali@13000000:mali_sram-supply:0";
+	};
+
+	__local_fixups__ {
+
+		fragment@0 {
+
+			__overlay__ {
+
+				mali@13000000 {
+					operating-points-v2 = <0x00>;
+				};
+			};
+		};
+	};
+};

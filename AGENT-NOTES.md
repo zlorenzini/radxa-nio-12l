@@ -64,9 +64,23 @@ The devfreq/OPP system failed at boot with `Couldn't update frequency transition
 
 **Fix applied:** `/FIRMWARE/mediatek/genio-1200-evk-ufs/gpu-mali.dtbo` on the firmware partition (`/dev/sdc3`) was patched. The `__fixups__` `mt6359_vsram_others_ldo_reg` entry was removed and `mt6315_7_vbuck1` now resolves both `mali-supply` and `mali_sram-supply`. **Reboot required.**
 
-Backup of original at `/tmp/gpu-mali.dtbo.bak` (SHA256: `2d9e69a09275423c550ef0ffb5ef468021b8d05deb6c0b8a4f98d69bd3a9b853`).
+Backup of original: SHA256 `2d9e69a09275423c550ef0ffb5ef468021b8d05deb6c0b8a4f98d69bd3a9b853`. Note: backup was at `/tmp/gpu-mali.dtbo.bak` and **will not survive a reboot** — if rollback is needed post-reboot, rebuild from the patched DTS source in this repo at `docs/gpu-mali-patched.dts` (or use `dtc -I dtb -O dts /dev/sdc3-mounted-path/gpu-mali.dtbo` to inspect what's there).
 
-Patched DTS source at `/tmp/gpu-mali-patched.dts`.
+Patched DTS source committed to this repo at `docs/gpu-mali-patched.dts`.
+
+### What to verify after the reboot
+
+1. `sudo dmesg | grep -i mali` — should NOT contain `Couldn't update frequency transition information`
+2. `cat /sys/bus/platform/devices/13000000.mali/devfreq/13000000.mali/cur_freq` — will still show 390 MHz at idle (correct), but transitions should now work under load
+3. `cat /sys/class/regulator/regulator.49/state` — should show `enabled` when GPU is active
+
+### Next step after verifying the reboot
+
+Enable Glamor (GPU-accelerated 2D rendering):
+```bash
+sudo bash ~/mali-glamor-enable.sh
+```
+This sets `AccelMethod "glamor"` in `/etc/X11/xorg.conf.d/10-modesetting.conf` and restarts GDM with the EGL shim (`LD_PRELOAD=/usr/local/lib/mali-egl-fix.so`) in place. The shim intercepts `EGL_NATIVE_PIXMAP_KHR` calls that the Mali blob doesn't support and converts them to `EGL_LINUX_DMA_BUF_EXT`.
 
 ## Rule
 

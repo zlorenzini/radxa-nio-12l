@@ -192,6 +192,19 @@ grep -E '^.*\(EE\)' /var/log/Xorg.0.log
 
 ---
 
+## Do Not Change AccelMethod
+
+`Option "AccelMethod" "none"` in `/etc/X11/xorg.conf.d/10-modesetting.conf` is a **required workaround**, not a placeholder. Do not change it to `"glamor"` or remove it. Without it:
+
+1. Xorg loads Glamor, which calls the AIGLX driver entry point for the Mali-G57.
+2. `libmali` is absent → `AIGLX error: Calling driver entry point failed`.
+3. Xorg exits with `Failed to create pixmap` / error code 1.
+4. GDM immediately respawns Xorg, which crashes again — continuous crash loop.
+
+If you want GPU acceleration, install `libmali` first (see [`gpu-acceleration.md`](gpu-acceleration.md)), then and only then change `AccelMethod` back to `"glamor"`.
+
+---
+
 ## Known Remaining Issues
 
 - **Software rendering only:** The desktop runs on LLVMpipe. Basic desktop use is fine; video playback and 3D applications will be slow. See [`gpu-acceleration.md`](gpu-acceleration.md) for the path to hardware acceleration.

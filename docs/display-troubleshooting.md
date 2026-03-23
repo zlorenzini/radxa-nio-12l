@@ -203,6 +203,8 @@ grep -E '^.*\(EE\)' /var/log/Xorg.0.log
 
 If you want GPU acceleration, install `libmali` first (see [`gpu-acceleration.md`](gpu-acceleration.md)), then and only then change `AccelMethod` back to `"glamor"`.
 
+> **The file is protected with `chattr +i` on the running board.** You cannot edit it without first running `sudo chattr -i /etc/X11/xorg.conf.d/10-modesetting.conf`. This is intentional — an AI agent repeatedly changed it back to `"glamor"` and crashed the display.
+
 ---
 
 ## Known Remaining Issues

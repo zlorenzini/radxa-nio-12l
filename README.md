@@ -24,6 +24,7 @@ Full hardware details → [`docs/hardware.md`](docs/hardware.md)
 | Document | What it covers |
 |----------|---------------|
 | [`docs/hardware.md`](docs/hardware.md) | Board layout, ports, power requirements, thermal notes |
+| [`docs/flashing-armbian.md`](docs/flashing-armbian.md) | Flashing Armbian — image source, genio-tools procedure, DDR variant notes |
 | [`docs/flashing-ubuntu.md`](docs/flashing-ubuntu.md) | Ubuntu flash procedure using `genio-tools` (historical reference) |
 | [`docs/first-boot.md`](docs/first-boot.md) | Power requirements, boot loop pitfalls, SSH access — Ubuntu context, but power/connectivity notes still apply |
 | [`docs/display-troubleshooting.md`](docs/display-troubleshooting.md) | Full root-cause chain for the HDMI black screen (Ubuntu/Xorg history) |
@@ -58,3 +59,9 @@ Full hardware details → [`docs/hardware.md`](docs/hardware.md)
 - [x] Wi-Fi
 - [x] Mali-G57 GPU acceleration
 - [ ] NPU (not yet tested)
+
+---
+
+## Resources
+
+- **Armbian for NIO 12L:** https://www.armbian.com/radxa-nio-12l/ — official image downloads and release notes; check here for updates

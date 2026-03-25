@@ -1,6 +1,6 @@
 # Radxa NIO 12L — Knowledge Base
 
-This repository is the operational knowledge base for the **Radxa NIO 12L** (Network I/O, 12-core, Lite) single-board computer — specifically the 16 GB DDR / 256 GB UFS variant. It covers initial setup, Ubuntu flashing, display bring-up, and ongoing embedded development notes.
+This repository is the operational knowledge base for the **Radxa NIO 12L** single-board computer — specifically the 16 GB DDR / 256 GB UFS variant, currently running Armbian with kernel 6.19.
 
 ---
 
@@ -13,7 +13,7 @@ This repository is the operational knowledge base for the **Radxa NIO 12L** (Net
 | GPU | Mali-G57 MC5 |
 | RAM | 16 GB LPDDR4X |
 | Storage | 256 GB UFS |
-| OS used | Ubuntu 22.04.3 LTS (kernel `5.15.0-1029-mtk`) |
+| OS | Armbian (kernel 6.19) |
 
 Full hardware details → [`docs/hardware.md`](docs/hardware.md)
 
@@ -24,20 +24,20 @@ Full hardware details → [`docs/hardware.md`](docs/hardware.md)
 | Document | What it covers |
 |----------|---------------|
 | [`docs/hardware.md`](docs/hardware.md) | Board layout, ports, power requirements, thermal notes |
-| [`docs/flashing-ubuntu.md`](docs/flashing-ubuntu.md) | End-to-end Ubuntu flash using `genio-tools` |
-| [`docs/first-boot.md`](docs/first-boot.md) | Power, boot loop pitfalls, SSH access, GDM crash loop |
-| [`docs/display-troubleshooting.md`](docs/display-troubleshooting.md) | Full root-cause chain for the HDMI black screen; working config |
-| [`docs/gpu-acceleration.md`](docs/gpu-acceleration.md) | Mali-G57 driver situation; software rendering workaround; upgrade path |
+| [`docs/flashing-ubuntu.md`](docs/flashing-ubuntu.md) | Ubuntu flash procedure using `genio-tools` (historical reference) |
+| [`docs/first-boot.md`](docs/first-boot.md) | Power requirements, boot loop pitfalls, SSH access — Ubuntu context, but power/connectivity notes still apply |
+| [`docs/display-troubleshooting.md`](docs/display-troubleshooting.md) | Full root-cause chain for the HDMI black screen (Ubuntu/Xorg history) |
+| [`docs/gpu-acceleration.md`](docs/gpu-acceleration.md) | Mali-G57 driver investigation; libmali bring-up history |
 | [`docs/embedded-dev.md`](docs/embedded-dev.md) | Embedded device KB — ongoing notes for projects based on this board |
 
 ---
 
 ## Quick-Start (already flashed)
 
-1. Connect monitor **before** powering on (Xorg reads EDID at init time).
+1. Connect monitor **before** powering on.
 2. Power via **27 W USB-C PSU** on the right-side port.
-3. Board boots to GDM login. Log in as `ubuntu`.
-4. SSH: `ssh ubuntu@<board-ip>` (default credentials set during flash; see [`docs/first-boot.md`](docs/first-boot.md)).
+3. Board boots to login. Credentials set during Armbian first-run setup.
+4. SSH: `ssh <user>@<board-ip>` (see [`docs/embedded-dev.md`](docs/embedded-dev.md) for current IP and user).
 
 ---
 
@@ -45,14 +45,16 @@ Full hardware details → [`docs/hardware.md`](docs/hardware.md)
 
 | Script | Purpose |
 |--------|---------|
-| [`flash-ubuntu.sh`](flash-ubuntu.sh) | Activate venv, run pre-flight checks, launch `genio-flash` |
+| [`flash-ubuntu.sh`](flash-ubuntu.sh) | Ubuntu flash via `genio-flash` (historical — board now runs Armbian) |
 
 ---
 
 ## Status
 
-- [x] Ubuntu 22.04 flashed and booting
+- [x] Armbian (kernel 6.19) flashed and booting
 - [x] SSH access
-- [x] HDMI desktop (Xorg + GNOME, software rendering)
-- [ ] Mali-G57 hardware acceleration
-- [ ] Android image bring-up
+- [x] HDMI display
+- [x] USB (all ports)
+- [x] Wi-Fi
+- [x] Mali-G57 GPU acceleration
+- [ ] NPU (not yet tested)

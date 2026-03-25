@@ -14,9 +14,12 @@ The NIO 12L draws significantly more than a standard USB device:
 |-------------|-------------|--------|
 | Laptop USB-C port | ~0.9 A (~4.5 W) | Board appears to boot but reboots constantly under any load |
 | USB-A 3.0 port | ~0.9 A | Same — insufficient |
-| 27 W USB-C PD adapter | 3 A @ 5 V = 15 W sustained | Stable |
+| USB-A block, 5 V / 3 A + USB-C-to-A cable | 3 A @ 5 V = 15 W sustained | Stable (minimum) |
+| USB-A or USB-C block, 5 V / 5 A | 5 A @ 5 V = 25 W sustained | Recommended |
 
-**Use a dedicated USB-C PD charger (18 W or higher) in the right-side USB-C port.**
+**Use a supply that guarantees 3 A on the 5 V rail, connected to the right-side USB-C port.**
+
+> **PD is not supported.** The board does not negotiate USB Power Delivery. A PD adapter that only delivers high current after negotiation may only provide ~0.9 A at 5 V, which is insufficient. Use a supply — USB-A block, dedicated 5 V barrel adapter via a cable, or a non-PD USB-C supply — that provides the full rated current unconditionally on the 5 V rail.
 
 When running from insufficient power the board will:
 - Power on and begin booting normally

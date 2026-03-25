@@ -42,8 +42,9 @@
 
 ## Power Requirements
 
-**Minimum: 5 V / 3 A (15 W).**  
-In practice a **27 W USB-C PD adapter** is recommended. A standard laptop USB-C port (~0.9 A) will power the board but cause instability and boot loops under load.
+**Minimum: 5 V / 3 A (15 W). Recommended: 5 V / 5 A (25 W).**
+
+> **PD is not supported.** The board draws straight 5 V — it does not negotiate USB Power Delivery. Use a supply that guarantees 3 A (or more) on the 5 V rail regardless of PD negotiation. A USB-A block rated 5 V / 3 A with a USB-C-to-A cable works correctly. A standard laptop USB-C port (~0.9 A) will power the board but cause instability and boot loops under load.
 
 - Power input: right USB-C port
 - Data (for flashing / ADB): left USB-A → board left USB-A (or any USB 3.0 port)

@@ -35,7 +35,7 @@ Full hardware details → [`docs/hardware.md`](docs/hardware.md)
 ## Quick-Start (already flashed)
 
 1. Connect monitor **before** powering on.
-2. Power via **27 W USB-C PSU** on the right-side port.
+2. Power via a **5 V / 3 A minimum** supply on the right-side USB-C port (5 V / 5 A recommended). PD is not supported — use a supply that guarantees 3 A on the 5 V rail.
 3. Board boots to login. Credentials set during Armbian first-run setup.
 4. SSH: `ssh <user>@<board-ip>` (see [`docs/embedded-dev.md`](docs/embedded-dev.md) for current IP and user).
 

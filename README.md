@@ -29,6 +29,7 @@ Full hardware details → [`docs/hardware.md`](docs/hardware.md)
 | [`docs/first-boot.md`](docs/first-boot.md) | Power requirements, boot loop pitfalls, SSH access — Ubuntu context, but power/connectivity notes still apply |
 | [`docs/display-troubleshooting.md`](docs/display-troubleshooting.md) | Full root-cause chain for the HDMI black screen (Ubuntu/Xorg history) |
 | [`docs/gpu-acceleration.md`](docs/gpu-acceleration.md) | Mali-G57 driver investigation; libmali bring-up history |
+| [`docs/usb-audio.md`](docs/usb-audio.md) | USB audio kernel rebuild — `CONFIG_SND_USB_AUDIO` missing from Armbian image; fix + update process |
 | [`docs/embedded-dev.md`](docs/embedded-dev.md) | Embedded device KB — ongoing notes for projects based on this board |
 
 ---
@@ -58,6 +59,7 @@ Full hardware details → [`docs/hardware.md`](docs/hardware.md)
 - [x] USB (all ports)
 - [x] Wi-Fi
 - [x] Mali-G57 GPU acceleration
+- [ ] USB audio (`snd-usb-audio` — kernel rebuild in progress; see [`docs/usb-audio.md`](docs/usb-audio.md))
 - [ ] NPU (not yet tested)
 
 ---

@@ -26,11 +26,19 @@ Full hardware details → [`docs/hardware.md`](docs/hardware.md)
 | [`docs/hardware.md`](docs/hardware.md) | Board layout, ports, power requirements, thermal notes |
 | [`docs/flashing-armbian.md`](docs/flashing-armbian.md) | Flashing Armbian — image source, `genio-tools` procedure, RAM variant notes |
 | [`docs/flashing-ubuntu.md`](docs/flashing-ubuntu.md) | Ubuntu flash procedure using `genio-tools` (historical reference) |
+<<<<<<< HEAD
 | [`docs/first-boot.md`](docs/first-boot.md) | Power requirements, boot loop pitfalls, SSH access |
 | [`docs/display-troubleshooting.md`](docs/display-troubleshooting.md) | HDMI bring-up and troubleshooting (Ubuntu/Xorg history, still useful for Armbian) |
 | [`docs/gpu-acceleration.md`](docs/gpu-acceleration.md) | Mali-G57 driver investigation; Panfrost vs. libmali history |
 | [`docs/benchmarks.md`](docs/benchmarks.md) | GPU benchmark results — glmark2-es2-wayland score 2699, DVFS verification |
 | [`docs/embedded-dev.md`](docs/embedded-dev.md) | Ongoing project notes |
+=======
+| [`docs/first-boot.md`](docs/first-boot.md) | Power requirements, boot loop pitfalls, SSH access |
+| [`docs/display-troubleshooting.md`](docs/display-troubleshooting.md) | HDMI bring-up and troubleshooting (Ubuntu/Xorg history, still useful for Armbian) |
+| [`docs/gpu-acceleration.md`](docs/gpu-acceleration.md) | Mali-G57 driver investigation; Panfrost vs. libmali history |
+| [`docs/benchmarks.md`](docs/benchmarks.md) | GPU benchmark results — glmark2-es2-wayland score 2699, DVFS verification |
+| [`docs/embedded-dev.md`](docs/embedded-dev.md) | Ongoing project notes |
+>>>>>>> 2d1d034da55018d2212ab25fea79ee6bb4ce705d
 
 ---
 
@@ -63,9 +71,15 @@ See [`docs/flashing-armbian.md`](docs/flashing-armbian.md). You'll need `genio-t
 - [x] HDMI display
 - [x] USB (all ports)
 - [x] Wi-Fi
+<<<<<<< HEAD
 - [x] Mali-G57 GPU acceleration — Panfrost (open-source), Mesa 25.2.8, OpenGL ES 3.1; glmark2 score **2699** (see [`docs/benchmarks.md`](docs/benchmarks.md))
 - [x] GPU DVFS — all 16 OPP levels (390–880 MHz) working after DT `mali_sram-supply` fix applied 2026-03-23
 - [ ] Vulkan — no `panvk` ICD in Mesa 25.2 for Bifrost; upstream work in progress
+=======
+- [x] Mali-G57 GPU acceleration — Panfrost (open-source), Mesa 25.2.8, OpenGL ES 3.1; glmark2 score **2699** (see [`docs/benchmarks.md`](docs/benchmarks.md))
+- [x] GPU DVFS — all 16 OPP levels (390–880 MHz) working after DT `mali_sram-supply` fix applied 2026-03-23
+- [ ] Vulkan — no `panvk` ICD in Mesa 25.2 for Bifrost; upstream work in progress
+>>>>>>> 2d1d034da55018d2212ab25fea79ee6bb4ce705d
 - [ ] NPU (not yet tested)
 
 ---

@@ -5,8 +5,9 @@
 - **CPU:** 4× Arm Cortex-A78 (performance) + 4× Arm Cortex-A55 (efficiency)
   - Big cores up to ~2.6 GHz; little cores up to ~2.0 GHz
 - **GPU:** Mali-G57 MC5 (5-core)
-  - No publicly available open-source driver for the full 3D stack
-  - Userspace driver (`libmali`) required for OpenGL ES / Vulkan acceleration (see [`gpu-acceleration.md`](gpu-acceleration.md))
+  - Open-source **Panfrost** driver works well under Armbian (Mesa 25.2, OpenGL ES 3.1)
+  - Proprietary `libmali` blob also available but not needed under Panfrost (see [`gpu-acceleration.md`](gpu-acceleration.md))
+  - Vulkan: not yet available via Panfrost for Bifrost; upstream `panvk` in progress
 - **VPU:** Integrated HW codec (H.264, H.265, VP9); kernel driver present but userspace support varies by image
 - **ISP:** Dual-ISP (MIPI CSI cameras), not used in this project yet
 - **NPU:** MT3620 (6 TOPS); accessible via MediaTek NeuroPilot SDK (not yet configured)

@@ -68,19 +68,18 @@ Backup of original: SHA256 `2d9e69a09275423c550ef0ffb5ef468021b8d05deb6c0b8a4f98
 
 Patched DTS source committed to this repo at `docs/gpu-mali-patched.dts`.
 
-### What to verify after the reboot
+### Verified after reboot (2026-03-23, Armbian)
 
-1. `sudo dmesg | grep -i mali` — should NOT contain `Couldn't update frequency transition information`
-2. `cat /sys/bus/platform/devices/13000000.mali/devfreq/13000000.mali/cur_freq` — will still show 390 MHz at idle (correct), but transitions should now work under load
-3. `cat /sys/class/regulator/regulator.49/state` — should show `enabled` when GPU is active
+**Important:** Armbian uses the **mainline kernel** (6.19.0-rc5-edge-genio) which loads **Panfrost** (open-source Mesa driver), NOT the proprietary Mali blob. `/dev/mali0` does not exist. All the `libmali` / `mali-egl-fix.so` / Glamor notes below are only relevant when booting the Ubuntu BSP kernel.
 
-### Next step after verifying the reboot
+Results:
+1. `sudo dmesg | grep -i mali` → `panfrost 13000000.gpu: mali-g57 id 0x9093` — no devfreq errors ✓
+2. `cat /sys/bus/platform/devices/13000000.gpu/devfreq/13000000.gpu/cur_freq` → 390000000 at idle ✓
+3. 16 OPP levels available (390–880 MHz), governor: `simple_ondemand` — full DVFS working ✓
+4. GNOME Shell on Wayland using `gbm renderer` for `/dev/dri/card0` — GPU-accelerated ✓
+5. Active DRM clients: gnome-shell, Xwayland, firefox, code — all on renderD128 ✓
 
-Enable Glamor (GPU-accelerated 2D rendering):
-```bash
-sudo bash ~/mali-glamor-enable.sh
-```
-This sets `AccelMethod "glamor"` in `/etc/X11/xorg.conf.d/10-modesetting.conf` and restarts GDM with the EGL shim (`LD_PRELOAD=/usr/local/lib/mali-egl-fix.so`) in place. The shim intercepts `EGL_NATIVE_PIXMAP_KHR` calls that the Mali blob doesn't support and converts them to `EGL_LINUX_DMA_BUF_EXT`.
+**In Armbian/Panfrost there is nothing further to do.** GPU acceleration is fully working out of the box. No Glamor config, no EGL shim needed.
 
 ## Rule
 

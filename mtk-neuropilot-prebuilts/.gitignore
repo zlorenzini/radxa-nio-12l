@@ -1,0 +1,41 @@
+# Ignore all shared libraries and binaries
+**/*.so*
+**/*.a
+**/*.o
+**/*.dll
+**/*.exe
+**/*.dylib
+
+# Ignore all files in lib64 and sbin directories
+**/lib64/
+**/sbin/
+
+# Ignore Python virtual environments
+venv/
+.env/
+
+# Ignore typical OS and editor files
+.DS_Store
+*.swp
+*.swo
+*.bak
+*~
+
+# Ignore build and dist folders
+build/
+dist/
+
+# Ignore neuron and mdw prebuilt binaries
+neuron/**/lib64/
+mdw/**/lib64/
+mdw/**/sbin/
+
+# Ignore sample model and result files
+sample/usr/share/benchmark_dla/*.tflite
+sample/usr/share/demo_dla/*.tflite
+sample/usr/share/demo_dla/*.txt
+
+# Ignore any other generated or binary files
+*.log
+*.tmp
+*.out

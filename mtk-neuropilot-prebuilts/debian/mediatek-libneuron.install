@@ -1,0 +1,4 @@
+# skip empty common subdir
+# refer to https://manpages.debian.org/testing/debhelper/dh_install.1.en.html#debian/
+mdw/android13/usr/lib64/* /usr/lib/
+neuron/6/usr/lib64/* /usr/lib/

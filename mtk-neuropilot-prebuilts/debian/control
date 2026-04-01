@@ -1,0 +1,29 @@
+Source: mediatek-neuropilot
+Section: non-free/libs
+Priority: optional
+Maintainer: Pablo Sun <pablo.sun@mediatek.com>
+Build-Depends: libstdc++6, libc++1, libc++abi1, libtinfo5, debhelper (>= 13)
+Standards-Version: 4.1.2
+Homepage: https://gitlab.com/mediatek/aiot/nda/mtk-neuropilot-prebuilts
+
+Package: mediatek-libneuron
+Architecture: arm64
+Depends: libstdc++6, libc++1, libc++abi1, libtinfo5
+Description: MediaTek Neuron runtime libraries for Genio platform
+ This provides runtime libraries for hardware accelerated 
+ machine learning model inference. libneuron is a subset of 
+ the MediaTek NeuroPilot 6 framework.
+
+Package: mediatek-neuron-utils
+Architecture: arm64
+Depends: mediatek-libneuron
+Description:  MediaTek Neuron utilities for Genio platform
+ This provides offline compilers for converting machine learning models
+ to proprietary format for Neuron runtime libraries for inference.
+ Utilities and examples are also provided.
+
+Package: mediatek-libneuron-dev
+Architecture: arm64
+Depends: mediatek-libneuron
+Description:  Header files for libneuron for Genio platform
+ Header files for MediaTek Neuron runtime libraries for Genio platform

@@ -1,0 +1,378 @@
+PLEASE CAREFULLY READ ALL OF THE TERMS AND CONDITIONS SET FORTH IN THIS AIOT
+SOFTWARE LICENSE AGREEMENT ("AGREEMENT") BEFORE YOU ("YOU" OR "LICENSEE") ACCESS
+AND/OR USE THE SOFTWARE (AS DEFINED BELOW) AND/OR DOCUMENTATION (AS DEFINED
+BELOW) FROM MEDIATEK INC. ("MTK" OR "LICENSOR"). BY CLICKING "I AGREE" BUTTON OR
+BY ACCESSING OR USING ANY PART OF THE SOFTWARE AND/OR DOCUMENTATION, YOU ACCEPT
+AND AGREE (ON BEHALF OF YOURSELF AND/OR YOUR COMPANY OR ORGANIZATION) TO BE
+BOUND BY THE TERMS AND CONDITIONS OF THIS AGREEMENT, WHICH THEN COMMENCES WITH
+EFFECT ("EFFECTIVE DATE") AS A LEGAL AGREEMENT BETWEEN YOU AND/OR YOUR COMPANY
+OR ORGANIZATION (AS APPLICABLE) AND MTK. IF YOU DO NOT AGREE TO THE TERMS AND
+CONDITIONS OF THIS AGREEMENT, YOU MUST NOT ACCESS OR USE THE SOFTWARE AND
+DOCUMENTATION.
+
+AIOT SOFTWARE LICENSE AGREEMENT
+
+This AIoT Software License Agreement ("Agreement") describes a framework for
+licensing certain portions of Software and relevant documentation which
+describes the Software and its related functionalities ("Documentation") from
+Licensor for the development, manufacturing, sale and distribution of Licensee's
+Application or      products containing Licensor's chipsets ("Chipset")
+("Licensed Product").      
+
+"Software" means the APIs (Application Programming Interface), applications,
+data, files, libraries, materials, IDE (Integrated Development Environment),
+sample code, software (source code and object code), simulators, and tools
+provided to Licensee by Licensor for use in connection with the development of
+Licensed Product or Application, including any revisions or updates that
+Licensor may provide.
+
+"Application" means a software program or operating system developed by Licensee
+using the Software for specific use with Licensed Product, including, in respect
+of such software programs, all bug fixes, enhancements, modifications, new
+releases, new versions, revisions, supplements, updates and upgrades.
+
+"Affiliate" shall mean any corporation, company or other entity which: (i) is
+controlled by a party to this Agreement; (ii) controls a party to this
+Agreement; or (iii) is under common control with a party to this Agreement. For
+the purpose of this definition, "control" means that more than fifty percent
+(50%) of the shares or ownership interest representing the voting right for the
+election of directors or persons performing similar functions for such a
+corporation, company or entity are owned or controlled, directly or indirectly,
+by the controlling entity. Such corporation, company or entity shall be deemed
+to be an Affiliate so long as such ownership or control exists.
+
+1. License of Software
+1.1. Applicable Terms If not expressly granted the license under Section 1.3 in
+the AIoT Software Manifest, Licensee is only granted the rights under Section
+1.2 but not under Section 1.3.  If expressly granted the license under Section
+1.3 in the AIoT Software Manifest, Licensee is granted the rights under both
+Sections 1.2 and 1.3.
+
+1.2. Standard License Subject to the terms and conditions of this Agreement,
+Licensor grants, and Licensee accepts, a limited, non-exclusive,
+non-transferable, world-wide, perpetual, terminable (under Section 9 hereof)
+license, under Licensor's intellectual property rights in and to the Software
+thereto, to: (a) Use, copy, modify and compile the Software, if provided in
+source code form, to create derivative works solely for the purpose of designing
+and developing Licensed Product or Application. (b) Incorporate the Software
+solely for the purpose of designing and developing Licensed Product or
+Application. (c) Demonstrate, market, reproduce and distribute copies of
+Software only in object code form and only as incorporated with Licensed Product
+or Application. 
+
+1.3. Additional License If expressly authorized in the AIoT Software Manifest,
+in addition to Section 1.2 and subject to the terms and conditions of this
+Agreement, Licensor grants, and Licensee accepts a license to distribute the
+Software to a third party customer who is not a competitor of Licensor
+("Customer") for such Customer to (i) incorporate the Software only in object
+code form solely for the purpose of designing and developing Licensed Product or
+Application; and (ii) demonstrate, market, reproduce and distribute copies of
+Software only in object code form and only as incorporated or used with Licensed
+Product or Application.
+
+2.  License of Documentation
+2.1. Applicable Terms If not expressly granted the license under Section 2.1 in
+the AIoT Software Manifest, Licensee is only granted the rights under Section
+2.2 but not under Section 2.3.  If expressly granted the license under Section
+2.3 in the AIoT Software Manifest, Licensee is granted the rights under both
+Sections 2.2 and 2.3.
+
+2.2. Standard License Subject to the terms and conditions of this Agreement,
+Licensor grants, and Licensee hereby accepts, a limited, non-exclusive,
+non-transferable, world-wide, perpetual, terminable (under Section 9 hereof)
+license, under Licensor's intellectual property rights in and to the
+Documentation, to use the Documentation solely to the extent that the
+Documentation is to be used in connection with the Software pursuant to Section
+1.2 above.
+
+2.3. Additional License If expressly authorized in the AIoT Software Manifest,
+in addition to Section 2.2 and subject to the terms and conditions of this
+Agreement, Licensor grants, and Licensee accepts a license to distribute the
+Documentation to a Customer, to use the Documentation solely to the extent that
+the Documentation is to be used in connection with the Software pursuant to
+Sections 1.3 above.
+
+3.  Restriction of License
+(a) Licensee agrees that Licensee will use the Software and Documentation only
+    as provided expressly in this Agreement, and any variation of the foregoing
+    requires written consent from Licensor. As a condition to the licenses
+    granted in Sections 1 and 2 above, Licensee shall not decompile,
+    disassemble, reverse engineer, adapt, alter or attempt to reconstruct,
+    identify or discover any source code, underlying ideas, underlying
+    algorithms of the Software provided to Licensee in object code form by any
+    means whatsoever, or disclose any of the foregoing, except to the extent
+    such restriction is expressly prohibited by applicable laws and not waivable
+    thereunder.
+(b) Licensee grants to Licensor, its Affiliates and/or subcontractors a
+    non-exclusive, non-transferable, irrevocable, perpetual, worldwide,
+    royalty-free, sub-licensable license under Licensee's intellectual property
+    rights to use without restriction and for any purpose any suggestion,
+    comment or other feedback related to the Software (including, but not
+    limited to, error corrections and bug fixes) and Documentations.
+(c) Both parties agree and acknowledge that Licensor will not deliver any
+    cellular software under this Agreement and the license grants set forth in
+    this Agreement do not include any right, license, directly or indirectly,
+    express, implied, in or to Licensor's cellular software under Licensor's
+    intellectual property rights.  
+(d) If Licensee distributes the Software, including revisions and upgrades
+    thereof, and Documentation pursuant to Sections 1 and 2 hereof, Licensee
+    shall (i) not use Licensor's or any of its licensors names, logos or
+    trademarks to market Applications or Licensed Products; (ii) retain any and
+    all copyright, trademarks, proprietary notices and other notices (whether
+    Licensor's or its licensor's) which are included with the Software; and
+    (iii) include a copy of this Agreement with such distribution.
+     
+4.  Payments     
+The license fees, if any (including specific terms thereof), under this
+Agreement shall be mutually agreed upon between the parties and set forth in a
+separate written agreement, which shall be made part of this Agreement. Unless
+otherwise agreed upon between the parties in writing, all payments shall be made
+in full within thirty (30) days after the issuance of invoice by Licensor.
+
+5.  Ownership to Software and Documentation
+Unless otherwise provided for in this Agreement, Licensee acknowledges and
+agrees that any and all intellectual property rights in and to the Software and
+Documentation, including without limitation patent, copyright, and trade
+secrets, shall remain the exclusive property of Licensor or, for third party
+software contained in the Software, such third party. Licensee acknowledges that
+no title to any intellectual property right in the Software is transferred to
+Licensee. Licensee further acknowledges that any modifications to the Software
+must be in accordance with this Agreement. Subject to Licensor's ownership
+interest in the underlying Software and Documentations, all intellectual
+property rights associated with, and title to, Licensee's Licensed Product or
+Application that vest in Licensee will be retained by Licensee. Any
+modifications made or developed by Licensee to the Software, and all
+intellectual property rights associated with, and title thereto, will be the
+exclusive property of Licensor ("Modifications"). Notwithstanding the foregoing,
+Licensee will have the license rights granted in Section 1 hereto to any such
+Modifications made by Licensee.
+
+6.  Confidentiality
+(a) Both parties acknowledge and agree that Confidential Information means all
+    information including but not limited to the Software and Documentation as
+    made available or disclosed by Licensor or its Affiliates under this
+    Agreement. Licensee shall maintain in confidence the Confidential
+    Information and apply security measures no less stringent than the measures
+    that Licensee applies to its own like information, but not less than a
+    reasonable degree of care, to prevent unauthorized disclosure and use of the
+    Confidential Information. Licensee shall not disclose or permit disclosure
+    of any Confidential Information to any third party or to any other person,
+    except on a strict "need to know" basis to directors, officers, employees,
+    contractors and outside consultants of Licensee where such disclosure is
+    necessary and required for Licensee to exercise its right licensed hereunder
+    and such persons are under confidentiality obligations in content at least
+    as protective as the provisions hereof, prior to the disclosure of
+    Confidential Information. If such person breaches any provisions of the
+    Agreement, Licensee agrees to be held jointly and severally liable for any
+    damages, costs or expenses incurred by Licensor as a result of such breach.
+    Licensee agrees to notify Licensor in writing of any actual or suspected
+    misuse, misappropriation or unauthorized disclosure of Confidential
+    Information which may come to the Licensee's attention. 
+(b) Licensee may disclose Confidential Information in the following
+    circumstances: (i) disclosure to third parties to the extent that the
+    Confidential Information is required to be disclosed pursuant to a court
+    order or as otherwise required by law, provided that Licensee promptly
+    notifies Licensor upon learning of such requirement and has given Licensor a
+    reasonable opportunity to contest or limit the scope of such required
+    disclosure (including but not limited to making an application for a
+    protective order); and (ii) disclosure to a third party under prior written
+    consent of Licensor.
+(c) The provisions of this Section 6 shall not apply to information which: (i)
+    is known to Licensee prior to its receipt of the Confidential Information,
+    provided that such information is not already subject to any obligations of
+    confidentiality; (ii) is in the public domain at the time of receipt or
+    later becomes part of the public domain without breach of the
+    confidentiality obligations in this Agreement; (iii) is received from a
+    third party without any breach of any obligation of confidentiality in
+    respect of such information; or
+(iv) is independently developed by the Licensee without any reliance or use of
+     any Confidential Information disclosed by Licensor, as evidenced by written
+     records.
+
+7.  Open Source and Product Liability
+(a) If Licensed Product or Application includes any Open Source Software (as
+    defined below), Licensee must comply with all licensing terms applicable to
+    such Open Source Software. Licensee shall not cause the portion of the
+    Software in Licensed Product or Application to be subject to the licensing
+    terms applicable to such Open Source Software. For purpose of this
+    Agreement, "Open Source Software" means any software or software component,
+    module or package that contains, or is derived in any manner (in whole or in
+    part) from, any software that is distributed as free software, open source
+    software or similar licensing or distribution models, including, without
+    limitation, software licensed or distributed under any of the following
+    licenses or distribution models, or licenses or distribution models similar
+    to any of the following: (i) GNU's General Public License (GPL) or
+    Lesser/Library GPL (LGPL); (ii) the Artistic License (e.g., PERL); (iii) the
+    Mozilla Public License; (iv) the Netscape Public License; (v) the Sun
+    Community Source License (SCSL); (vi) the Sun Industry Standards License
+    (SISL); (vii) the BSD License; and (viii) the Apache License.
+(b) Licensee acknowledges that the Software and Documentation are not intended
+    to be used in any products where death, personal injury, or severe physical
+    or environmental damage could result from errors or inaccuracies in the
+    content, data or information provided by the products or the products
+    failing. To the extent permitted by law, Licensee agrees to indemnify,
+    defend and hold harmless Licensor, its Affiliates, directors, officers,
+    employees, customers, agents and/or subcontractors (each an "Indemnified
+    Party") from any and all claims, losses, liabilities, damages, expenses and
+    costs (including without limitation reasonable attorneys' fees) incurred by
+    such Indemnified Party as a result of Licensee's use of the Software and
+    Documentation in any such products.
+
+8. Limitation of Liability
+(a) Licensor's entire liability arising out of or in connection with a
+    particular version of Software shall not exceed the aggregate amount of
+    license fees paid by Licensee to Licensor for such Software. Notwithstanding
+    the foregoing, Licensor's entire liability in the aggregate for its breach
+    of the terms of this Agreement shall not exceed the aggregate amount of
+    license fees paid by Licensee to Licensor for the twelve (12) months
+    preceding the event giving rise to the first breach. In no event shall
+    either party be liable for special, incidental, consequential, indirect, or
+    punitive damages, including loss of profit or revenues, arising out of or in
+    connection with this Agreement. The limitations shall apply even if such
+    party has been advised of the possibility of such damages and
+    notwithstanding any failure of essential purpose of any limited remedy.
+(b) LICENSOR MAKES NO OTHER WARRANTIES WITH RESPECT TO THE LICENSE GRANTED TO
+    LICENSEE HEREUNDER, EXPRESSED, IMPLIED, STATUTORY OR OTHERWISE, AND LICENSOR
+    DISCLAIMS ANY IMPLIED WARRANTY, INCLUDING WITHOUT LIMITATION ANY IMPLIED
+    WARRANTY OF MERCHANTABILITY, NON-INFRINGEMENT OF THIRD PARTY INTELLECTUAL
+    PROPERTY RIGHT, OR FITNESS FOR A PARTICULAR PURPOSE. LICENSOR SPECIFICALLY
+    DISCLAIMS ANY WARRANTY THAT THE OPERATION OF SOFTWARE WILL BE UNINTERRUPTED
+    OR ERROR FREE.
+(c) LICENSEE ACKNOWLEDGES THAT SOFTWARE, DOCUMENTATION AND/OR CHIPSETS
+    ("RECEIVED ITEM") MAY BE SUBJECT TO EXPORT, IMPORT AND/OR RE-EXPORT
+    RESTRICTIONS UNDER THE LAWS AND REGULATIONS OF RELATED JURISDICTIONS.
+    LICENSEE SHALL NOT EXPORT, RE-EXPORT, IMPORT OR OTHERWISE SELL, TRANSFER,
+    DIRECTLY OR INDIRECTLY, RECEIVED ITEM ACQUIRED HEREUNDER EXCEPT IN STRICT
+    COMPLIANCE WITH ALL SUCH APPLICABLE LAWS AND REGULATIONS. LICENSEE EXPRESSLY
+    AGREES THAT RECEIVED ITEM SHALL NOT BE DOWNLOADED, TRANSFERRED OR OTHERWISE
+    EXPORTED OR RE-EXPORTED INTO (OR TO A NATIONAL OR RESIDENT OF) ANY EMBARGOED
+    COUNTRIES, NOR TO ANYONE ON RELATED DENIAL LISTS, INCLUDING BUT NOT LIMITED
+    TO THE U.S. TREASURY DEPARTMENT'S LIST OF SPECIALLY DESIGNATED NATIONALS OR
+    THE U.S. COMMERCE DEPARTMENT'S TABLE OF DENIAL ORDERS. LICENSEE HEREBY
+    REPRESENTS AND WARRANTS THAT IT IS NOT LOCATED IN, UNDER THE CONTROL OF, OR
+    A NATIONAL OR RESIDENT OF, ANY SUCH COUNTRY, OR ON ANY SUCH LIST. WITHOUT
+    LIMITING THE FOREGOING, LICENSEE AGREES THAT RECEIVED ITEM PROVIDED
+    HEREUNDER SHALL NOT BE EXPORTED, RE-EXPORTED, OR TRANSFERRED TO ANY END-USER
+    ENGAGED IN ACTIVITIES, OR FOR ANY END-USE, DIRECTLY OR INDIRECTLY RELATED TO
+    THE DESIGN, DEVELOPMENT, PRODUCTION, USE, OR STOCKPILING OF WEAPONS OF MASS
+    DESTRUCTION (E.G., NUCLEAR, CHEMICAL, OR BIOLOGICAL WEAPONS, AND THE MISSILE
+    TECHNOLOGY TO DELIVER THEM). LICENSEE FURTHER ACKNOWLEDGES AND AGREES THAT
+    IT WILL COOPERATE WITH LICENSOR AND/OR RELATED APPLICABLE JURISDICTION TO
+    PROVIDE ALL THE NECESSARY ASSISTANCE, INFORMATION AND DOCUMENT TO PROVE ITS
+    COMPLIANCE WITH THIS SECTION.
+(d) Licensor will not be responsible for the following items with respect to
+    software or technology: (i) not supplied by Licensor (including without
+    limitation any modifications or additions to the Software or Documentation
+    made by Licensee), (ii) made in compliance with Licensee's specifications,
+    (iii) made to adhere to published standards, including but not limited to
+    GSM, GPRS, EDGE, UMTS(3G), TD-SCDMA, Bluetooth, WAP or successor standards
+    whether open or restricted; (iv) combined with other products, processes, or
+    materials where the alleged infringement relates to such combination, (v)
+    where Licensee continues the activity that is alleged to infringe after
+    being notified thereof or after being informed of modifications that avoid
+    the alleged infringement, or (vi) where use of the Software or Documentation
+    is incidental to an infringement not directly resulting from use of such
+    Software or Documentation as delivered to Licensee or is not in accordance
+    with the rights granted in this Agreement. Notwithstanding anything
+    contained herein to the contrary, Licensee understands and acknowledges that
+    the payment payable to Licensor hereunder does not include royalties or fees
+    payable based on adherence of Licensed Product or Application to published
+    standards, and any such fees are the sole responsibility of Licensee and
+    Licensee has the sole responsibility to procure license of any intellectual
+    property right for Licensed Product or Application to comply with such
+    published standards.
+(e) Licensee hereby acknowledges that the Software provided under this Agreement
+    might include software from one or more third parties (e.g. open source or
+    proprietary, collectively as "Third Party Software") and the use of such
+    shall be in accordance with the terms and conditions of this Agreement and
+    the license terms of the Third Party Software as specified in the AIoT
+    Software Manifest or third party software license agreement accompanying
+    such Third Party Software. Except for the Third Party Software listed in
+    AIoT Software Manifest which explicitly stated that such Third Party
+    Software will be provided by Licensor, Licensee expressly acknowledges that
+    it is Licensee's sole responsibility to obtain from any third party all
+    proper licenses contained in the Software. NOTWITHSTANDING ANY WARRANTY SET
+    FORTH UNDER THIS AGREEMENT, LICENSOR HEREBY EXPRESSLY DISCLAIMS ANY AND ALL
+    WARRANTIES, EXPRESS OR IMPLIED, TO THE EXTENT ALLOWED BY APPLICABLE LAWS,
+    WITH RESPECT TO ANY THIRD PARTY SOFTWARE.
+
+9. Term and Termination
+(a) The term of this Agreement shall begin on the Effective Date, and the term
+    of this Agreement shall continue until terminated in accordance with the
+    terms of this Agreement.
+(b) Either party may terminate this Agreement for any reason or no reason upon
+    thirty (30) days prior written notice to the other party.
+(c) If either party breaches a material provision of this Agreement and does not
+    cure the breach within thirty (30) days after written notice from the other
+    party, the non-breaching party shall have the right to terminate this
+    Agreement, as applicable, by written notice and all such other remedies as
+    are available at law or equity as limited by the terms of this Agreement. 
+(d) Licensor shall have the right to terminate this Agreement, as applicable, if
+    (i) after consultation with Licensee, Licensed Product or Application
+    designed and developed by Licensee has a material defect or defects that
+    renders it not commercially feasible to continue the development of Licensed
+    Product or Application; or (ii) Licensee fails to pay any payment, in whole
+    or in part, due for the Chipset sold by Licensor to Licensee and does not
+    cure the breach within thirty (30) days after written notice from Licensor.
+(e) Should either party: (i) become insolvent; (ii) make an assignment for the
+    benefit of creditors; (iii) file or have filed against it a petition in
+    bankruptcy or seeking reorganization; (iv) have a receiver appointed; or (v)
+    institute any proceedings for liquidation or winding up; the other party
+    may, in addition to other rights and remedies it may have, terminate this
+    Agreement, immediately by written notice.
+(f) In the event that this Agreement is terminated, Licensee shall immediately
+    cease using the Software and Licensor's Confidential Information in any
+    manner whatsoever and shall return Software and Licensor's Confidential
+    Information to the Licensor and/or destroy the Software and all the
+    Licensor's Confidential Information according to Licensor's instruction.
+    Upon Licensor's request, Licensee shall promptly submit a written
+    certificate to certify that all Licensor's Confidential Information has been
+    returned or destroyed by Licensee. However, the license granted under this
+    Agreement shall survive with respect to Software for use with the Chipset
+    already purchased by Licensee prior to the termination of this Agreement. 
+(g) Sections 3, 5, 6, 7, 8, 9(f)-(g), 10 and shall survive the termination of
+    this Agreement.
+
+10. General Provisions
+(a) Terms and conditions contained in this Agreement shall constitute an entire
+    agreement of the parties hereto. This Agreement supersede any and all prior
+    or contemporaneous oral or written understandings, warranties,
+    representations or agreements between or among the parties, relating to the
+    subject matter hereof.
+(b) Licensee shall not assign its rights or delegate its obligation arising
+    under this Agreement in whole or in part, without Licensor's prior written
+    consent. Any attempted assignment or delegation by Licensee, without such
+    consent by Licensor, will be void and constitute a material breach of this
+    Agreement which would allow Licensor to terminate this Agreement. Subject to
+    the foregoing, all of the rights and obligations of Licensee under this
+    Agreement will bind and inure to the benefit of Licensee's respective
+    successors and permitted assigns.
+(c) The parties are independent contractors. Neither has the authority to bind
+    the other to any third person or act in any way as the representative of the
+    other, unless otherwise expressly agreed to in writing by authorized
+    representatives of both parties. This Agreement in no way prohibits Licensor
+    from licensing any intellectual property to other parties. 
+(d) This Agreement shall be governed by and construed in accordance with the
+    laws of Singapore, without regard to any conflict-of-laws rules.
+(e) To the extent that any provision, portion or extent of this Agreement is
+    found invalid, illegal or unenforceable in any jurisdiction, then unless
+    such provision materially affects the intent and purpose of this Agreement,
+    that provision, portion or extent shall be severed or deleted herefrom, or
+    limited in such jurisdiction so as to give effect to the intent of the
+    parties insofar as possible and the remainder of this Agreement shall remain
+    binding upon the parties. Unless it materially affects the intent and
+    purpose of this Agreement, the invalidity or unenforceability of any
+    provision in one jurisdiction shall not affect the validity or
+    enforceability of (i) such provision in any other jurisdiction or (ii) any
+    other provision in any jurisdiction.
+(f) The headings contained in this Agreement are for reference purposes only and
+    shall not affect the meaning or interpretation of this Agreement.
+
+AIOT SOFTWARE LICENSE AGREEMENT V1 MAR 2022
+MediaTek Confidential 
+
+
+
+
+202203 version
+

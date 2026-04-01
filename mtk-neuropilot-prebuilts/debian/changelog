@@ -1,0 +1,50 @@
+mediatek-neuropilot (6.0+genio23.2-0genio1) jammy; urgency=medium
+
+  * Update prebuilt binary packge to IoT Yocto v23.2.
+  * Fix an issue that causes label_image.py fail to run.
+
+ -- Pablo Sun <pablo.sun@mediatek.com>  Wed, 01 May 2024 14:06:42 +0800
+
+mediatek-neuropilot (6.0+genio23.1~pr2-0genio3) jammy; urgency=medium
+
+  * Install debian/copyright file to /usr/share/doc/ so the package LICENSE
+    info can be properly detected as MEDIATEK-IOT-SLA.
+
+ -- Pablo Sun <pablo.sun@mediatek.com>  Fri, 27 Oct 2023 15:04:20 +0800
+
+mediatek-neuropilot (6.0+genio23.1~pr2-0genio2) jammy; urgency=medium
+
+  * Update copyright file to provide text of AIOT SOFTWARE LICENSE AGREEMENT,
+    and update the short name to MEDIATEK-IOT-SLA.
+
+ -- Pablo Sun <pablo.sun@mediatek.com>  Thu, 26 Oct 2023 14:40:12 +0800
+
+mediatek-neuropilot (6.0+genio23.1~pr2-0genio1) jammy; urgency=medium
+
+  Update IoT Yocto v23.1 PR2 pre-release with following commits:
+
+  * neuropilot: np6: Refine error message to print detailed information for easier debugging
+  * neuropilot: np6: Update release note
+  * neuropilot: np6: Remove misleading warning messages and print detailed information for easier debugging
+  * neuropilot: Update benchmark script to add error handling for missing input file
+  * neuropilot: Update benchmark script to remove hardcoded python script path
+  * neuropilot: Update demo script to remove hardcoded python script path
+  * neuropilot: Update release note
+
+ -- Pablo Sun <pablo.sun@mediatek.com>  Tue, 08 Aug 2023 20:13:06 +0800
+
+mediatek-neuropilot (6.0+genio23.1~pr1-0genio1) jammy; urgency=medium
+
+  * Ubuntu: Add debian control files for NeuroPilot 6.0 prebuilt
+    binaries and header files for Genio platform. 
+    
+  * Prebuilt binaries provides offline compilers
+    and runtime libraries for hardware accelerated machine learning
+    model inference.
+
+  * These binaries are built for Genio IoT Yocto v23.1 and is 
+    also compatible to Genio Ubuntu. 
+  
+  * These prebuilt libraries links to clang C++ runtime.
+
+ -- Pablo Sun <pablo.sun@mediatek.com>  Thu, 13 Jul 2023 16:27:42 +0800

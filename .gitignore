@@ -1,11 +1,19 @@
+# Local backups created before sync/conflict-risk operations
+.local-backups/
+
+# Python local environment
+venv/
+
+# Extracted/stock image bundles (large vendor artifacts; keep out of git)
 genio-classic-desktop-noble-emmc-20250926-1185/
 genio-g1200-evk-boot-assets-20250926-1185/
 scarthgap_k6.6_v25.1.1_genio-1200-evk-ufs_private_260316022635/
 
-# Generated image artifacts from local inspection/extraction
-*.raw.img
-*.ext4
-*.wic.img
+# Vendor prebuilt package dump/reference content
+mtk-neuropilot-prebuilts/
 
-# Local temporary extraction workspace
+# Temporary extraction workspace and image intermediates
 .tmp-scarthgap-extract/
+*.wic.img
+*.ext4
+*.raw.img

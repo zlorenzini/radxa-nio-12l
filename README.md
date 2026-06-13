@@ -26,19 +26,11 @@ Full hardware details → [`docs/hardware.md`](docs/hardware.md)
 | [`docs/hardware.md`](docs/hardware.md) | Board layout, ports, power requirements, thermal notes |
 | [`docs/flashing-armbian.md`](docs/flashing-armbian.md) | Flashing Armbian — image source, `genio-tools` procedure, RAM variant notes |
 | [`docs/flashing-ubuntu.md`](docs/flashing-ubuntu.md) | Ubuntu flash procedure using `genio-tools` (historical reference) |
-<<<<<<< HEAD
 | [`docs/first-boot.md`](docs/first-boot.md) | Power requirements, boot loop pitfalls, SSH access |
 | [`docs/display-troubleshooting.md`](docs/display-troubleshooting.md) | HDMI bring-up and troubleshooting (Ubuntu/Xorg history, still useful for Armbian) |
-| [`docs/gpu-acceleration.md`](docs/gpu-acceleration.md) | Mali-G57 driver investigation; Panfrost vs. libmali history |
+| [`docs/gpu-acceleration.md`](docs/gpu-acceleration.md) | Mali-G57 driver investigation; Panfrost vs. libmali history; AFBC stability fix |
 | [`docs/benchmarks.md`](docs/benchmarks.md) | GPU benchmark results — glmark2-es2-wayland score 2699, DVFS verification |
 | [`docs/embedded-dev.md`](docs/embedded-dev.md) | Ongoing project notes |
-=======
-| [`docs/first-boot.md`](docs/first-boot.md) | Power requirements, boot loop pitfalls, SSH access |
-| [`docs/display-troubleshooting.md`](docs/display-troubleshooting.md) | HDMI bring-up and troubleshooting (Ubuntu/Xorg history, still useful for Armbian) |
-| [`docs/gpu-acceleration.md`](docs/gpu-acceleration.md) | Mali-G57 driver investigation; Panfrost vs. libmali history |
-| [`docs/benchmarks.md`](docs/benchmarks.md) | GPU benchmark results — glmark2-es2-wayland score 2699, DVFS verification |
-| [`docs/embedded-dev.md`](docs/embedded-dev.md) | Ongoing project notes |
->>>>>>> 2d1d034da55018d2212ab25fea79ee6bb4ce705d
 
 ---
 
@@ -71,15 +63,10 @@ See [`docs/flashing-armbian.md`](docs/flashing-armbian.md). You'll need `genio-t
 - [x] HDMI display
 - [x] USB (all ports)
 - [x] Wi-Fi
-<<<<<<< HEAD
 - [x] Mali-G57 GPU acceleration — Panfrost (open-source), Mesa 25.2.8, OpenGL ES 3.1; glmark2 score **2699** (see [`docs/benchmarks.md`](docs/benchmarks.md))
 - [x] GPU DVFS — all 16 OPP levels (390–880 MHz) working after DT `mali_sram-supply` fix applied 2026-03-23
+- [x] GPU stability — Panfrost AFBC corruption fixed via `PAN_MESA_DEBUG=noafbc` (see Known Gotchas)
 - [ ] Vulkan — no `panvk` ICD in Mesa 25.2 for Bifrost; upstream work in progress
-=======
-- [x] Mali-G57 GPU acceleration — Panfrost (open-source), Mesa 25.2.8, OpenGL ES 3.1; glmark2 score **2699** (see [`docs/benchmarks.md`](docs/benchmarks.md))
-- [x] GPU DVFS — all 16 OPP levels (390–880 MHz) working after DT `mali_sram-supply` fix applied 2026-03-23
-- [ ] Vulkan — no `panvk` ICD in Mesa 25.2 for Bifrost; upstream work in progress
->>>>>>> 2d1d034da55018d2212ab25fea79ee6bb4ce705d
 - [ ] NPU (not yet tested)
 
 ---
@@ -89,6 +76,7 @@ See [`docs/flashing-armbian.md`](docs/flashing-armbian.md). You'll need `genio-t
 - **Power supply** — the board will boot-loop indefinitely on insufficient current (laptop USB-C at ~0.9 A is not enough). Use a dedicated 5 V / 3 A+ supply. See [`docs/first-boot.md`](docs/first-boot.md).
 - **DDR variant** — there are 8 GB and 16 GB RAM variants. The firmware files in the image must match. The wrong variant causes boot loops. See [`docs/flashing-armbian.md`](docs/flashing-armbian.md).
 - **GPU DVFS** — the stock `gpu-mali.dtbo` in some firmware versions has a mis-wired regulator reference for `mali_sram-supply` which locks the GPU at 390 MHz with no frequency scaling. See [`docs/gpu-acceleration.md`](docs/gpu-acceleration.md) for the fix.
+- **GPU AFBC corruption** — Panfrost on kernel 6.19 with Mesa 25.2 produces `JOB_STATUS_INVALID_DATA_FAULT` GPU faults after hours of sustained browser use. Root cause is AFBC (Arm Frame Buffer Compression) generating malformed job descriptors under long-running EGL compositor load. The kernel cmdline parameter `panfrost.no_afbc=1` does **not** work (silently ignored in 6.19). The correct fix is to disable AFBC at the Mesa level — add `export PAN_MESA_DEBUG=noafbc` to `~/.bashrc`. Confirmed stable at 5+ days uptime with browser open after this change.
 - **Vulkan** — not available under Panfrost on Ubuntu 24.04's Mesa 25.2. Upstream `panvk` support for Bifrost is in development.
 
 ---
@@ -97,4 +85,4 @@ See [`docs/flashing-armbian.md`](docs/flashing-armbian.md). You'll need `genio-t
 
 - **Armbian for NIO 12L:** https://www.armbian.com/radxa-nio-12l/ — official image downloads and release notes
 - **Radxa NIO 12L wiki:** https://wiki.radxa.com/Nio12L
-- **MediaTek Genio 1200 (MT8395):** MT8395 is also sold as the Genio 1200; SoC docs and BSPs are interchangeable between the two names
+- **MediaTek Genio 1200 (MT8395):** MT8395 is also sold as the Genio 1200; SoC docs 

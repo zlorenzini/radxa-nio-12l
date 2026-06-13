@@ -48,14 +48,14 @@ swiotlb buffer is full
 Then set larger DMA pools via boot args:
 
 ```bash
-sudo sed -i 's#^extraargs=.*#extraargs=cma=512M swiotlb=262144#' /boot/armbianEnv.txt
+sudo sed -i 's#^extraargs=.*#extraargs=cma=4096M swiotlb=262144#' /boot/armbianEnv.txt
 sudo reboot
 ```
 
 If `extraargs=` does not exist, append it:
 
 ```bash
-echo 'extraargs=cma=512M swiotlb=262144' | sudo tee -a /boot/armbianEnv.txt
+echo 'extraargs=cma=4096M swiotlb=262144' | sudo tee -a /boot/armbianEnv.txt
 sudo reboot
 ```
 

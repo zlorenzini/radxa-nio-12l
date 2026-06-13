@@ -114,7 +114,7 @@ Interpretation:
 Persistent fix prepared in Armbian build tree (board defaults):
 - File changed: `/home/zach/Documents/build/config/boards/radxa-nio-12l.conf`
 - `SRC_CMDLINE` now includes:
-    - `cma=512M`
+    - `cma=4096M`
     - `swiotlb=262144`
 
 Result: newly built images for `radxa-nio-12l` will boot with larger DMA pools by default.
@@ -127,7 +127,7 @@ dmesg | grep -Ei 'swiotlb|iommu|dma translation|buffer is full'
 ```
 
 Expected:
-- `/proc/cmdline` includes `cma=512M` and `swiotlb=262144`
+- `/proc/cmdline` includes `cma=4096M` and `swiotlb=262144`
 - No recurring `Cannot accommodate DMA translation` or `swiotlb buffer is full` during video workloads.
 
 Rollback path:
@@ -168,7 +168,7 @@ Post-install check on board:
 cat /proc/cmdline
 ```
 
-If `cma=512M swiotlb=262144` is missing, add them under `extraargs=` in `/boot/armbianEnv.txt` and reboot.
+If `cma=4096M swiotlb=262144` is missing, add them under `extraargs=` in `/boot/armbianEnv.txt` and reboot.
 
 ### 2026-04-11: Attempting kernel switch now
 
@@ -180,10 +180,10 @@ Run steps are documented in:
 Current intent:
 1. Install newly built `linux-image-edge-genio` and `linux-dtb-edge-genio` packages.
 2. Reboot into the new kernel.
-3. Verify `cma=512M swiotlb=262144` in `/proc/cmdline`.
+3. Verify `cma=4096M swiotlb=262144` in `/proc/cmdline`.
 4. Re-test for absence of prior DMA/IOMMU video errors.
 
-If boot args are missing post-reboot, set `extraargs=cma=512M swiotlb=262144` in `/boot/armbianEnv.txt` and reboot.
+If boot args are missing post-reboot, set `extraargs=cma=4096M swiotlb=262144` in `/boot/armbianEnv.txt` and reboot.
 
 ### 2026-04-11: Configs moved into this repo for commit
 

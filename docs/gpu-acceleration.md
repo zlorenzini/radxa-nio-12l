@@ -1,46 +1,60 @@
 # GPU Acceleration — Mali-G57 on the NIO 12L
 
-## Current State
+## Current State (Armbian, kernel 6.19)
 
-The NIO 12L uses a **Mali-G57 MC5** GPU (part of Arm's Bifrost architecture family, kernel driver `arm,mali-midgard` on `/dev/mali0`).
+The NIO 12L uses a **Mali-G57 MC5** GPU (Arm Bifrost architecture). Under Armbian with kernel 6.19, the active driver is **Panfrost** (open source, DRM/KMS), backed by **Mesa 25.2.8**. OpenGL ES 3.1 and OpenGL 3.1 are fully functional.
 
-**As of 2026-03-22:** `libmali-mtk-8195` **r48p0** is installed (`48p0+git20241205.ba78630-0ubuntu5`). The EGL, GLES, and GBM system symlinks all point to the Mali blob at `/usr/lib/aarch64-linux-gnu/mt8195/lib/libmali.so.0.48.0`. The DRI driver `mali-dp_dri.so` is present in `/usr/lib/aarch64-linux-gnu/dri/`.
+**glmark2-es2-wayland score: 2699.** See [docs/benchmarks.md](benchmarks.md) for full results.
 
-Despite `libmali` being installed, Xorg Glamor is still **disabled** as of now. The reason: r48p0 supports `EGL_EXT_image_dma_buf_import` but does **not** support `EGL_KHR_image_pixmap`. Xorg glamor calls `epoxy_eglCreateImageKHR(EGL_NATIVE_PIXMAP_KHR)`, which the blob rejects, causing Xorg to abort.
+| Feature | Status | Notes |
+|---------|--------|-------|
+| OpenGL ES 3.1 | ✅ Working | Panfrost / Mesa 25.2.8 |
+| OpenGL 3.1 | ✅ Working | Panfrost / Mesa 25.2.8 |
+| Vulkan | ❌ Not available | panvk Bifrost support not present in Mesa 25.2 |
+| GPU DVFS | ✅ Working | 16 OPP levels, 390–880 MHz (after `mali_sram-supply` fix — see Fix 1) |
+| GPU stability | ✅ Stable | AFBC corruption fixed via `PAN_MESA_DEBUG=noafbc` (see Fix 2) |
+| VPU / video decode | ⚠️ Untested | V4L2 M2M device present, not configured |
+| NPU | ⚠️ Untested | See `install-genio-neuropilot.sh` |
 
-**Workaround in progress:** A small LD_PRELOAD shim (`mali-egl-fix.c` → `/tmp/mali-egl-fix/mali-egl-fix.so`) intercepts `epoxy_eglCreateImageKHR` calls with target `EGL_NATIVE_PIXMAP_KHR` and converts them to `EGL_LINUX_DMA_BUF_EXT` (exporting the GBM BO as a DMA-BUF fd first). This matches extensions the Mali blob does support.
+---
 
-To enable Glamor, run:
-```bash
-sudo bash ~/mali-glamor-enable.sh
-```
-(Script at `~/mali-glamor-enable.sh`. See script comments for what it does and how to undo.)
+## Fix 1 — GPU DVFS: mali_sram-supply Device Tree Patch
 
-Current status:
-- OpenGL ES → available (via `libmali` r48p0)
-- Vulkan → available (Vulkan ICD at `/usr/lib/aarch64-linux-gnu/mt8195/vulkan/mali.json`)
-- Xorg Glamor (2D accel) → **not yet enabled** — shim installed, pending reboot to pick up DT fix
-- LLVMpipe (software GL) → still active fallback until Glamor is enabled
-- VPU / video decode → untested (see end of doc)
-- GPU devfreq/OPP → **power regulation fix pending reboot** (see below)
+### Symptom
 
-### Power Regulation Issue — mali-supply vs mali_sram-supply
+GPU locked permanently at the lowest OPP (390 MHz). At every boot, dmesg shows:
 
-The Mali driver registers two power supplies via `supply-names = "mali\0mali_sram"` in the device tree. The `gpu-mali.dtbo` overlay (applied by U-Boot at boot) originally set:
-- `mali-supply` → `mt6315_7_vbuck1` (Vgpu, MT6315 PMIC on SPMI bus) ✓
-- `mali_sram-supply` → `mt6359_vsram_others_ldo_reg` (vsram_others, MT6359 PMIC on pwrap) ✗
-
-The mismatch caused:
 ```
 devfreq 13000000.mali: Couldn't update frequency transition information.
 ```
-at every boot, leaving the GPU permanently at the lowest OPP (390 MHz) with no frequency scaling.
 
-**Fix (2026-03-23):** Both supplies now reference `mt6315_7_vbuck1`. The `__fixups__` section of `gpu-mali.dtbo` was changed so `mt6315_7_vbuck1` resolves both `mali-supply` and `mali_sram-supply`. With one physical regulator serving both consumers, the regulator framework holds Vgpu at the max of both OPP voltage requests (750 mV constant — slightly less efficient but frequency scaling now works).
+### Root Cause
 
-The patched DTBO is in the firmware partition at `/dev/sdc3` → `FIRMWARE/mediatek/genio-1200-evk-ufs/gpu-mali.dtbo`. The DTS source is at `/tmp/gpu-mali-patched.dts`.
+The Mali driver registers two power supplies via `supply-names = "mali\0mali_sram"` in the device tree. The stock `gpu-mali.dtbo` overlay wired them as:
 
-To roll back:
+- `mali-supply` → `mt6315_7_vbuck1` (Vgpu, MT6315 PMIC on SPMI bus) ✓
+- `mali_sram-supply` → `mt6359_vsram_others_ldo_reg` (vsram_others, MT6359 PMIC on pwrap) ✗
+
+The wrong PMIC reference for `mali_sram-supply` caused the regulator framework to fail, and the driver disabled DVFS entirely.
+
+### Fix Applied (2026-03-23)
+
+Both `mali-supply` and `mali_sram-supply` now reference `mt6315_7_vbuck1`. The `__fixups__` section of `gpu-mali.dtbo` was updated so `mt6315_7_vbuck1` resolves both consumers. With one physical regulator serving both, the framework holds Vgpu at the max of both OPP voltage requests (750 mV constant — slightly less efficient but all 16 OPP levels now work).
+
+The patched DTBO is stored in the firmware partition at `/dev/sdc3` → `FIRMWARE/mediatek/genio-1200-evk-ufs/gpu-mali.dtbo`. The DTS source is at `docs/gpu-mali-patched.dts`.
+
+### Verification
+
+```bash
+# List all available GPU frequencies
+cat /sys/class/devfreq/13000000.gpu/available_frequencies
+
+# Check current operating frequency
+cat /sys/class/devfreq/13000000.gpu/cur_freq
+```
+
+### Rollback
+
 ```bash
 sudo mkdir -p /mnt/fw
 sudo mount -o rw /dev/sdc3 /mnt/fw
@@ -50,143 +64,76 @@ sudo sync && sudo umount /mnt/fw
 
 ---
 
-## What You Need (Completed)
+## Fix 2 — GPU Stability: AFBC Corruption (JOB_STATUS_INVALID_DATA_FAULT)
 
-`libmali-mtk-8195` (r48p0) is now installed. The package provides EGL 1.4, OpenGL ES 1.1/2.0/3.1/3.2, OpenCL 2.0, and Vulkan 1.1. The system symlinks point at it.
+### Symptom
 
-The remaining step is enabling Glamor with the LD_PRELOAD shim; see **Current State** above.
+After hours of browser use (Chromium or Firefox equally), the display glitches and dmesg shows:
+
+```
+panfrost 13000000.gpu: JOB_STATUS_INVALID_DATA_FAULT
+```
+
+### Root Cause
+
+AFBC (Arm Frame Buffer Compression) generates malformed job descriptors under sustained EGL compositor load on kernel 6.19 / Mesa 25.2. This is a known Panfrost/Bifrost bug.
+
+### Failed Workaround
+
+Adding `panfrost.no_afbc=1` to the kernel command line has no effect — this parameter does not exist in the 6.19 Panfrost driver and is silently ignored:
+
+```
+panfrost: unknown parameter 'no_afbc' ignored
+```
+
+### Correct Fix
+
+Disable AFBC at the Mesa level by setting the `PAN_MESA_DEBUG=noafbc` environment variable. Add it to `~/.bashrc`:
+
+```bash
+export PAN_MESA_DEBUG=noafbc
+```
+
+**Result:** Confirmed stable — 5+ days uptime with browser open, zero `JOB_STATUS_INVALID_DATA_FAULT` faults after applying the fix.
+
+> **Note for image builders:** Set this system-wide by adding it to `/etc/environment` or creating `/etc/profile.d/panfrost.sh`:
+> ```bash
+> echo 'export PAN_MESA_DEBUG=noafbc' | sudo tee /etc/profile.d/panfrost.sh
+> ```
 
 ---
 
-## EGL Platform Notes
+## SVS (Smart Voltage Scaling)
 
-The r48p0 blob advertises these client extensions:
-```
-EGL_KHR_platform_gbm  EGL_KHR_platform_wayland  EGL_EXT_platform_wayland
-```
-It uses the **GBM EGL platform** for Xorg Glamor (exactly what Xorg's modesetting driver needs).
+MediaTek SVS (Smart Voltage Scaling) runs at boot and sets per-OPP voltage margins for the GPU, split into two bands: `SVSB_GPU_LOW` and `SVSB_GPU_HIGH`. These are visible in dmesg as `svs_init02_isr_handler` entries for each band.
 
-Supported image extensions include:
-- `EGL_KHR_image`, `EGL_KHR_image_base` ✓
-- `EGL_EXT_image_dma_buf_import`, `EGL_EXT_image_dma_buf_import_modifiers` ✓
-- `EGL_KHR_image_pixmap` ✗ (this is why the mali-egl-fix shim is needed)
+The band split occurs around 640–670 MHz. SVS operates correctly once the `mali_sram-supply` fix (Fix 1) is in place and `PAN_MESA_DEBUG=noafbc` is set (Fix 2).
 
 ---
 
-## Finding libmali for the Genio 1200
+## Video Decode (VPU)
 
-### Option 1 — Radxa / IoT Yocto BSP
+The MT8395 SoC includes a hardware VPU supporting H.264, H.265, and VP9, exposed as a V4L2 M2M device.
 
-MediaTek and Radxa provide `libmali` as part of their Yocto-based Linux BSP for the Genio 1200. The relevant package is sometimes called `libmali-bifrost-g57` or `libmali-mt8395`.
-
-Check if Radxa has published an apt repository for Ubuntu packages:
-```bash
-# On the board:
-apt-cache search libmali
-# Or check Radxa's package server:
-# https://github.com/radxa-pkg  (search for mali or libmali)
-```
-
-### Option 2 — IoT Yocto SDK Extraction
-
-If you have access to the MediaTek IoT Yocto SDK for MT8395:
-```
-meta-mediatek-mt8395/recipes-graphics/libmali/
-```
-The `.so` files can be extracted and installed manually. You need the variant matching your kernel ABI and GPU configuration.
-
-### Option 3 — Panfrost (Open Source, Long Term)
-
-[Panfrost](https://docs.mesa3d.org/drivers/panfrost.html) is the open-source reverse-engineered driver for Arm Mali GPUs (Midgard, Bifrost, Valhall). Mali-G57 is Bifrost.
-
-Panfrost support for Mali-G57 (G57 = Bifrost Gen 3) is available in Mesa 22+ but **kernel support depends on the DRM driver**. The `5.15.0-1029-mtk` kernel uses a MediaTek-patched DRM that may or may not expose the standard `panfrost` interface.
-
-Check:
-```bash
-# Does the kernel have panfrost?
-lsmod | grep panfrost
-modinfo panfrost 2>/dev/null
-
-# What DRM driver is bound to the GPU?
-dmesg | grep -iE 'mali|panfrost|gpu'
-ls /dev/dri/
-```
-
-If `panfrost` is available and bound, Mesa's Panfrost driver may work with a newer Mesa:
-```bash
-# Check Mesa version
-glxinfo 2>/dev/null | grep "OpenGL renderer"
-# Install newer Mesa if needed (via ubuntu-toolchain-r or oibaf PPA — aarch64 support varies)
-```
-
----
-
-## Installing libmali (when available)
-
-Once you have the `.so` file(s), the basic installation pattern:
-
-```bash
-# Example — adjust filename to match actual file
-sudo cp libmali-bifrost-g57-*.so /usr/lib/aarch64-linux-gnu/
-sudo ln -sf libmali-bifrost-g57-<version>.so /usr/lib/aarch64-linux-gnu/libmali.so.1
-sudo ln -sf libmali.so.1 /usr/lib/aarch64-linux-gnu/libmali.so
-sudo ldconfig
-```
-
-libmali typically also replaces (or supplements) the OpenGL ES and EGL stubs:
-```bash
-# libmali often ships as a drop-in for these:
-sudo ln -sf libmali.so /usr/lib/aarch64-linux-gnu/libGLESv2.so.2
-sudo ln -sf libmali.so /usr/lib/aarch64-linux-gnu/libEGL.so.1
-```
-
-After installing libmali, **re-enable Glamor** by removing (or editing) the `AccelMethod "none"` xorg.conf.d entry and restarting GDM.
-
----
-
-## Re-enabling Glamor After Installing libmali
-
-Edit `/etc/X11/xorg.conf.d/10-modesetting.conf` — remove the `AccelMethod "none"` line or delete the file entirely:
-
-```bash
-sudo rm /etc/X11/xorg.conf.d/10-modesetting.conf
-sudo systemctl restart gdm3
-```
-
-Verify acceleration:
-```bash
-sudo bash -c 'DISPLAY=:0 XAUTHORITY=/run/user/131/gdm/Xauthority glxinfo | grep -E "renderer|vendor"'
-# Should show "Mali-G57" rather than "llvmpipe"
-```
-
----
-
-## Video Decode Acceleration
-
-The SoC has a hardware VPU (H.264, H.265, VP9). The kernel exposes it as a V4L2 M2M device. VA-API or GStreamer with a v4l2 plugin may be able to use it:
+This has not yet been configured or tested. To inspect available devices:
 
 ```bash
 ls /dev/video*
 v4l2-ctl --list-devices 2>/dev/null
 ```
 
-GStreamer pipeline test:
-```bash
-sudo apt install gstreamer1.0-tools gstreamer1.0-plugins-good gstreamer1.0-plugins-bad
-gst-launch-1.0 filesrc location=test.mp4 ! qtdemux ! h264parse ! v4l2h264dec ! ...
-```
-
-This is not yet fully configured — tracked as future work in [`embedded-dev.md`](embedded-dev.md).
+Tracked as future work in [embedded-dev.md](embedded-dev.md).
 
 ---
 
-## Summary
+## Historical Reference — Ubuntu / libmali Era
 
-| Feature | Status | Notes |
-|---------|--------|-------|
-| 3D acceleration (OpenGL ES) | ✅ Available | `libmali` r48p0 installed |
-| Vulkan | ✅ Available | Mali Vulkan ICD installed |
-| Xorg Glamor (2D accel) | ⚠️ Not yet enabled | Requires mali-egl-fix shim + GDM restart (run `~/mali-glamor-enable.sh`) |
-| LLVMpipe (software GL) | ✅ Working | Current fallback until Glamor is enabled |
-| Panfrost open driver | ⚠️ N/A | Kernel uses proprietary mali kbase (not panfrost); `/dev/mali0` not `/dev/dri/renderD128` |
-| VPU / video decode | ⚠️ Untested | V4L2 M2M device present, not configured |
+Prior to the switch to Armbian, the board ran Ubuntu with the proprietary **`libmali-mtk-8195` r48p0** blob (`48p0+git20241205.ba78630-0ubuntu5`). Key characteristics of that setup:
+
+- GPU accessed via `/dev/mali0` (mali kbase driver, not Panfrost/DRM)
+- Vulkan was available via the blob's ICD at `/usr/lib/aarch64-linux-gnu/mt8195/vulkan/mali.json`
+- Xorg Glamor required an LD_PRELOAD shim (`mali-egl-fix.so`) to work around the missing `EGL_KHR_image_pixmap` extension; the blob supported `EGL_EXT_image_dma_buf_import` but not `EGL_KHR_image_pixmap`, causing Xorg to abort
+- The same `mali_sram-supply` DVFS bug existed and the same fix was applied
+- LLVMpipe was the active software GL fallback when Glamor was not enabled
+
+That setup was abandoned in favour of Panfrost for an open-source, mainline-aligned stack and better sustained performance.

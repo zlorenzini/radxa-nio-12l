@@ -197,3 +197,78 @@ Reapply into Armbian build tree before compile:
 cp /home/zach/Documents/radxa-nio-12l/kernel/userpatches/config/boards/radxa-nio-12l.conf \
     /home/zach/Documents/build/config/boards/radxa-nio-12l.conf
 ```
+
+### 2026-06-27: IRQ 116 storm and mt6360 regulator failures (Armbian 6.19.8-edge-genio)
+
+**Symptom:** At every boot, ~54 seconds after kernel start:
+```
+mt6360-regulator mt6360-regulator.7.auto: Failed to register  4 regulator
+mt6360 5-0034: Failed to create device link (0x180) with supplier regulator-vsys-buck
+mt6360-tcpc mt6360-tcpc.8.auto: Failed to register tcpci port
+irq 116: nobody cared (try booting with the "irqpoll" option)
+Disabling IRQ #116
+```
+
+**Root cause (two issues):**
+
+1. `LDO_VIN1-supply = <&vsys_buck>` — kernel 6.19 `device_link_add()` with `DL_FLAG_PM_RUNTIME` fails when creating a link to a fixed regulator that hasn't completed PM runtime init. Affects ldo1 (ext_lcd_3v3), ldo2 (panel1_p1v8), ldo3 (vmc_pmu/SD card signal voltage).
+
+2. `LDO_VIN3-supply = <&buck2>` — `buck2` is a sibling sub-node of `mt6360-regulator` itself. Linking an MFD device to its own sub-regulator fails. Affects ldo6 and ldo7 (emi_vmddr_en).
+
+3. The `tcpci_mt6360` module (`CONFIG_TYPEC_MT6360=m`) loads, partially inits, holds the PD_IRQB line (EINT 100, level-low, IRQ 116) asserted, fires ~100k times, then the kernel disables the IRQ. USB-C PD was already broken by the upstream regulator failures.
+
+**Fix applied (2026-06-27):**
+- `/etc/modprobe.d/disable-mt6360-tcpc.conf` → `blacklist tcpci_mt6360`
+  - Stops the module from loading; EINT 100 stays masked; no interrupt storm
+  - USB-C PD was already non-functional
+- `/boot/armbianEnv.txt` → added `extraargs=cma=256M swiotlb=262144`
+  - Restored DMA fix (lost in reflash) for IOMMU/video DMA errors
+  - Note: originally set to `cma=4096M` but that silently fails on this board (DRAM layout can't satisfy 4 GiB contiguous); lowered to 256M on 2026-06-28
+
+**Rollback (blacklist):** `sudo rm /etc/modprobe.d/disable-mt6360-tcpc.conf && reboot`
+**Rollback (boot args):** Remove the `extraargs=` line from `/boot/armbianEnv.txt` and reboot.
+
+**Upstream fix pending:** Patch series `arm64: dts: mediatek: mt8395-kontron-i1200: Fix MT6360 regulator nodes` (LKML 2025/7/24/454, same SoC family) likely contains the DTS fix for the LDO_VIN1/LDO_VIN3 supply chain. Check Armbian edge-genio updates — when it lands, `tcpci_mt6360` can be un-blacklisted and SD card signal voltage / panel power may start working.
+
+**Verification after reboot:**
+```bash
+cat /proc/cmdline                                      # should show cma=256M swiotlb=262144
+journalctl -k | grep "irq 116\|nobody cared"          # should be empty
+journalctl -k | grep "mt6360-tcpc"                    # should be absent (module blacklisted)
+lsmod | grep tcpci_mt6360                             # should be empty
+```
+
+### 2026-06-28: Stability fixes — AFBC, persistent journal, panic reboot
+
+**Symptom:** System rebooted after ~4 hours of uptime. Hardware watchdog (MTK WDT, 31 s) fired — most likely a Panfrost GPU job fault escalating to a kernel hard lockup.
+
+**Root causes identified:**
+
+1. `PAN_MESA_DEBUG=noafbc` was **never applied** to the running system despite being documented as the fix. AFBC corruption causes `JOB_STATUS_INVALID_DATA_FAULT` GPU resets under sustained EGL/browser load, which can escalate to a driver hang and watchdog reset.
+
+2. Journal storage was `volatile` — crash evidence was lost on every reboot, making diagnosis impossible.
+
+3. `cma=4096M` silently fails at boot (`cma: Failed to reserve 4096 MiB`; CmaTotal=0). IOMMU is in Translated mode so DMA works without CMA, but the failing reservation produces noise. Lowered to `cma=256M`.
+
+**Fixes applied (2026-06-28):**
+
+- `~/.config/environment.d/panfrost.conf` → `PAN_MESA_DEBUG=noafbc`
+  - systemd user-session environment; picked up by GNOME/Wayland on login
+- `~/.bashrc` → `export PAN_MESA_DEBUG=noafbc`
+  - covers interactive terminal sessions
+- `sudo bash ~/fix-stability.sh` (run once by user) writes:
+  - `/etc/profile.d/panfrost.sh` → `export PAN_MESA_DEBUG=noafbc` (system-wide login shells)
+  - `/etc/systemd/journald.conf.d/persistent.conf` → `Storage=persistent`, `SystemMaxUse=256M`, `SyncIntervalSec=1m`
+  - `/etc/sysctl.d/99-panic-reboot.conf` → `kernel.panic=30`, `kernel.panic_on_oops=1`
+  - `/boot/armbianEnv.txt` → `cma=256M` (down from failing 4096M)
+
+**Verification:**
+```bash
+printenv PAN_MESA_DEBUG                # should be noafbc (in any session post-login)
+journalctl --list-boots                # should show multiple entries after next reboot
+grep CmaTotal /proc/meminfo            # should be non-zero (e.g. 262144 kB)
+cat /proc/cmdline | grep cma           # should show cma=256M
+sysctl kernel.panic                    # should be 30
+```
+
+**Rollback noafbc:** `rm ~/.config/environment.d/panfrost.conf && sed -i '/PAN_MESA_DEBUG/d' ~/.bashrc && sudo rm /etc/profile.d/panfrost.sh`

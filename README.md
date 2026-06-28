@@ -85,4 +85,4 @@ See [`docs/flashing-armbian.md`](docs/flashing-armbian.md). You'll need `genio-t
 
 - **Armbian for NIO 12L:** https://www.armbian.com/radxa-nio-12l/ — official image downloads and release notes
 - **Radxa NIO 12L wiki:** https://wiki.radxa.com/Nio12L
-- **MediaTek Genio 1200 (MT8395):** MT8395 is also sold as the Genio 1200; SoC docs 
+- **MediaTek Genio 1200 (MT8395):** MT8395 is also sold as the Genio 1200; SoC docs and BSPs are interchangeable between the two names

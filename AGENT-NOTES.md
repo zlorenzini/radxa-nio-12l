@@ -272,3 +272,15 @@ sysctl kernel.panic                    # should be 30
 ```
 
 **Rollback noafbc:** `rm ~/.config/environment.d/panfrost.conf && sed -i '/PAN_MESA_DEBUG/d' ~/.bashrc && sudo rm /etc/profile.d/panfrost.sh`
+
+### 2026-08-28: HDMI switcher caused display + wifi failure (not a driver regression)
+
+**Symptom:** Board was running fine at 1600x900. After a reboot, display was capped at 1024x768 and wifi was gone entirely. No config had been touched between the good and bad boots. A separate Raspberry Pi plugged into the same HDMI chain showed the identical 1024x768 symptom, confirming it wasn't board- or OS-specific. Removing the external HDMI switcher from the chain immediately restored both 1600x900 and wifi.
+
+**Root cause:** RF/EMI, not power or software. The switcher had its own independent power supply with no electrical connection to either board — the only shared channel was the HDMI cable itself. A flaky/poorly-shielded switcher radiates noise from the TMDS clock and its harmonics, which can land in the 2.4GHz ISM band. On boards where the wifi antenna sits close to the HDMI port, that's enough to knock wifi out. The same signal integrity mess plausibly caused the DDC/EDID read to fail on that boot, falling back to the 1024x768 VESA default (the standard "couldn't read real EDID" fallback).
+
+Why it only showed up after a reboot with nothing changed: EDID/DDC is only freshly re-negotiated on a cold probe (boot/hotplug). A marginal switcher can hold a stable, already-negotiated link indefinitely and only reveal a glitch the next time something forces a fresh handshake.
+
+**Fix:** Remove the HDMI switcher from the chain. If a switcher must be used, verify it doesn't reproduce this failure across multiple reboots before trusting it.
+
+**Lesson for future debugging:** If display caps at 1024x768 and/or wifi disappears right after a reboot with no board-side config changes, suspect the HDMI switcher/cable (EMI or bad EDID negotiation) before chasing a kernel/driver regression — check by removing external HDMI hardware first. Reproducing the same symptom on a second, unrelated device through the same physical chain is strong evidence it's the shared hardware, not either machine.

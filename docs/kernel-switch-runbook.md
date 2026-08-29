@@ -89,3 +89,44 @@ This repo enables it in:
 - `kernel/userpatches/config/kernel/linux-genio-edge.config`
 
 Rebuild kernel packages and reinstall the new `linux-image-edge-genio` package.
+
+## 7) Freezing on a known-good kernel (preventing unwanted upgrades)
+
+The board carries a lot of version-specific state tied to the exact running kernel/DTB:
+the `mt6360-tcpc` blacklist and IRQ 116 fix, the `cma=256M swiotlb=262144` boot args, the
+`PAN_MESA_DEBUG=noafbc` AFBC workaround, and the patched `gpu-mali.dtbo` regulator wiring
+(see `AGENT-NOTES.md`). None of these are guaranteed to still be needed — or to still work
+the same way — on a different kernel build, and `apt.armbian.com` regularly carries a newer
+`linux-image-edge-genio` candidate than what's installed.
+
+Once a kernel is verified good, lock it down:
+
+```bash
+sudo bash scripts/hold-kernel.sh
+```
+
+which holds `linux-image-edge-genio`, `linux-dtb-edge-genio`, and
+`linux-u-boot-radxa-nio-12l-edge`. This blocks `apt upgrade` / `apt full-upgrade` (and
+armbian-config's "Update") from touching them. A `dpkg -i` of a new local build (step 1
+above) still overrides a hold, so this runbook's own kernel-switch flow keeps working —
+the hold only stops *automatic* upgrades.
+
+Note: `unattended-upgrades` on this board only acts on origins matching
+`${distro_id}:${distro_codename}` (i.e. `Ubuntu:noble`). Armbian's repo reports
+`Origin: Armbian`, so it's already excluded from unattended-upgrades by default — the
+hold above exists for manual/scripted `apt upgrade` runs, not unattended-upgrades. If that
+ever changes (e.g. `Unattended-Upgrade::Allowed-Origins` gets a line added for Armbian, or
+`Allow-Kernel-Update` is set), re-verify with:
+
+```bash
+sudo unattended-upgrade --dry-run --debug 2>&1 | grep -iE "armbian|linux-image-edge-genio"
+```
+
+To later intentionally move to a new kernel, unhold first:
+
+```bash
+sudo apt-mark unhold linux-image-edge-genio linux-dtb-edge-genio linux-u-boot-radxa-nio-12l-edge
+```
+
+then follow this runbook from step 1, and re-run `scripts/hold-kernel.sh` once the new
+kernel is verified stable.

@@ -284,3 +284,62 @@ Why it only showed up after a reboot with nothing changed: EDID/DDC is only fres
 **Fix:** Remove the HDMI switcher from the chain. If a switcher must be used, verify it doesn't reproduce this failure across multiple reboots before trusting it.
 
 **Lesson for future debugging:** If display caps at 1024x768 and/or wifi disappears right after a reboot with no board-side config changes, suspect the HDMI switcher/cable (EMI or bad EDID negotiation) before chasing a kernel/driver regression — check by removing external HDMI hardware first. Reproducing the same symptom on a second, unrelated device through the same physical chain is strong evidence it's the shared hardware, not either machine.
+
+### 2026-09-03: Post-reflash fix audit + HDMI-RX/APU kernel-branch finding
+
+**Symptom:** Board was reflashed. Checked each documented fix individually rather than assuming
+either "all gone" or "all present" — the actual state was mixed: `PAN_MESA_DEBUG=noafbc`
+(`.bashrc`, `~/.config/environment.d/panfrost.conf`) and the three kernel/DTB/u-boot apt holds
+had survived, but the mt6360-tcpc blacklist, `cma=256M swiotlb=262144` boot args,
+`/etc/profile.d/panfrost.sh`, persistent journald config, and the panic-reboot sysctl were all
+missing. The IRQ 116 storm (see 2026-06-27 entry) was reproducing again as a result.
+
+GPU DVFS (the `mali_sram-supply` dtbo patch, gpu-acceleration.md Fix 1) needed **no** action —
+16 OPP levels present, no devfreq registration error in dmesg. Whatever shipped in this flash's
+`gpu-mali.dtbo` is already correct; don't reapply that patch blindly, check dmesg first.
+
+**Fix applied:** all of the above (except the dtbo, which wasn't needed) are now in one script:
+`scripts/apply-stability-fixes.sh`, idempotent, safe to run after any future reflash. Run with
+`sudo bash scripts/apply-stability-fixes.sh` then reboot. Still run `scripts/hold-kernel.sh`
+separately afterward (or first — order doesn't matter) since the holds are apt state, not files
+this script can idempotently detect the same way.
+
+**HDMI-RX / NPUSYS long-shot — findings (no kernel work attempted yet):**
+
+Pulled the actual Armbian `armbian/build` config for the `genio` board family
+(`config/sources/families/genio.conf` + `config/kernel/linux-genio-{edge,vendor}.config`) to
+settle the open question in `docs/hdmi-rx-porting-plan.md` and `docs/feature-migration-plan.md`
+about whether `CONFIG_MTK_HDMI_RX` / an APU Kconfig symbol even exist in the tree we build from:
+
+- **`edge` branch** (what this board runs — mainline-aligned, currently kernel 7.2 upstream in
+  Armbian's tree vs. our installed `6.19.8-edge-genio`): grepping the full kernel config fragment
+  found **no** `MTK_HDMI_RX` or `MTK_APU*` symbols at all — only `CONFIG_PHY_MTK_HDMI=y`, which is
+  the HDMI *output* PHY, unrelated. The driver source for HDMI-RX and APUSYS is not present in
+  this tree. This isn't a Kconfig flip; it would be a real backport from another kernel.
+- **`vendor` branch** (`KERNELSOURCE=https://git.launchpad.net/~canonical-kernel/ubuntu/+source/linux-mtk`,
+  Canonical's 5.15-based fork, same one the old libmali/Ubuntu-BSP era used — see gpu-acceleration.md's
+  Historical Reference): **both drivers already exist and are wired up** —
+  `CONFIG_MTK_HDMI_RX=m`, `CONFIG_MTK_APU=m`, `CONFIG_MTK_APUSYS_SUPPORT=m`,
+  `CONFIG_MTK_APUSYS_MDLA_SUPPORT=y`, `CONFIG_MTK_APUSYS_VPU=y`. This branch is already a supported
+  build target for this board (the family's `case $BRANCH in edge|vendor)` block covers it) — but
+  it's a full kernel switch away from the current mainline/Panfrost stack, not an add-on: no
+  Panfrost (back to `libmali` blob + the Glamor EGL shim from the top of this file), a 5.15
+  kernel, and unknown DT coverage for NIO 12L specifically (that vendor tree's DT support was
+  built around the EVK, not this board — untested here).
+
+**Net assessment:**
+- **HDMI-RX is very likely a dead end regardless of kernel branch**, independent of the software
+  question above: `docs/feature-migration-plan.md` already established the EVK's HDMI-RX path
+  depends on ITE IT6510/IT6625 external bridge chips physically populated on the EVK PCB, which
+  the NIO 12L does not have and has no HDMI-in port for. Driver support existing on the vendor
+  kernel doesn't create hardware that isn't on this board.
+- **APU/NPUSYS is more plausible** — the MDLA/VPU cores are on-die on the MT8395 (SoC-level, not
+  dependent on EVK-only external chips), so no equivalent hardware objection applies. But getting
+  it onto the kernel this board actually runs means porting the out-of-tree APUSYS driver from a
+  5.15-based fork to a 7.x mainline tree — real driver work (mailbox/IOMMU/genpd/power-domain APIs
+  have moved a lot across those kernel generations), not a config flag. Alternative is building the
+  `vendor` branch outright for this board, but that discards Panfrost and every mainline-era
+  stability fix in this file, and its DT was never validated against NIO 12L wiring.
+
+No kernel build was attempted this pass — this was a scoping/recon step only, done by
+sparse-cloning `armbian/build`'s `config/` tree (no board/root access needed for this part).

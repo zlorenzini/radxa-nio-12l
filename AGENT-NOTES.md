@@ -370,3 +370,31 @@ during early boot) is not actually "in effect" just because the file exists — 
 running initramfs is newer than the file. `[[ "$file" -nt "$initrd" ]]` in a bash script is
 enough to catch this class of bug. Applies to any fix that touches early-boot module loading,
 not just this one.
+
+### 2026-09-12: Verified initramfs fix holds after reboot
+
+**Context:** First reboot since `ff1b615` (initramfs-staleness self-heal in
+`scripts/apply-stability-fixes.sh`, see 2026-09-11 entry above).
+
+Checked live state at ~2 min uptime on `6.19.8-edge-genio`:
+
+```bash
+journalctl -k -b | grep -Ei "irq 116|nobody cared|mt6360-tcpc"   # empty
+lsmod | grep tcpci_mt6360                                        # not loaded
+ls -la /boot/initrd.img-$(uname -r) /etc/modprobe.d/disable-mt6360-tcpc.conf
+  # initrd.img rebuilt 2026-09-12 00:00, newer than the blacklist file (2026-09-03)
+cat /proc/cmdline       # cma=256M swiotlb=262144 present
+printenv PAN_MESA_DEBUG # noafbc
+sysctl kernel.panic     # 30
+```
+
+**Result:** IRQ 116 storm and `tcpci_mt6360` load are both gone — the initramfs self-heal
+worked as designed. `mt6360-regulator ... Failed to register 4 regulator` is still logged at
+boot; that's the separate, already-documented LDO_VIN1/LDO_VIN3 supply-chain issue (2026-06-27
+entry), unrelated to the storm, and expected to persist until the upstream DTS fix lands.
+
+**Next test in progress:** user is opening multiple GPU-accelerated windows concurrently to
+stress-test for the AFBC/Panfrost watchdog-reset failure mode from the 2026-06-28 entry
+(hard lockup after ~4h uptime under sustained EGL/browser load). `noafbc` is confirmed set in
+env for this session; watch for MTK WDT resets, `JOB_STATUS_INVALID_DATA_FAULT`, or a reboot
+with no shutdown log during this test.

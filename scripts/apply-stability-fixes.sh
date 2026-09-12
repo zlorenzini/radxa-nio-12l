@@ -7,12 +7,21 @@
 # to run on any boot state rather than assuming a truly blank system).
 #
 # Covers:
-#   1. mt6360-tcpc IRQ 116 storm -- blacklist tcpci_mt6360 (2026-06-27 fix)
+#   1. mt6360-tcpc IRQ 116 storm -- blacklist tcpci_mt6360 (2026-06-27 fix),
+#      PLUS rebuilding initramfs when it's stale relative to the blacklist file
+#      (2026-09-11 fix -- see below)
 #   2. DMA/IOMMU headroom -- cma=256M swiotlb=262144 boot args (2026-06-27/28)
 #   3. Panfrost AFBC corruption -- PAN_MESA_DEBUG=noafbc, system-wide (2026-06-28)
 #   4. Persistent journal -- survive crashes for postmortem (2026-06-28)
 #   5. Panic-on-oops + reboot -- avoid silent hangs (2026-06-28)
 #   6. Kernel/DTB/u-boot apt holds -- see scripts/hold-kernel.sh (not duplicated here)
+#
+# 2026-09-11 finding: tcpci_mt6360.ko is bundled directly inside the initramfs,
+# which carries its OWN frozen copy of /etc/modprobe.d used by udev during early
+# boot -- before the real rootfs's /etc/modprobe.d is consulted. If the blacklist
+# file above is written/updated after the initramfs was last built, the storm
+# keeps happening despite the blacklist file being present on disk. This script
+# now checks that ordering and rebuilds the initramfs whenever it's stale.
 #
 # Does NOT touch the gpu-mali.dtbo mali_sram-supply patch (docs/gpu-acceleration.md
 # Fix 1) -- verify first with the check below; only patch if actually broken.
@@ -43,6 +52,22 @@ fi
 if lsmod | grep -q '^tcpci_mt6360'; then
     modprobe -r tcpci_mt6360 2>/dev/null && echo "  unloaded tcpci_mt6360 (was loaded this boot)" \
         || echo "  WARNING: tcpci_mt6360 loaded and busy; reboot to fully clear it"
+fi
+
+KVER=$(uname -r)
+INITRD=$(readlink -f /boot/initrd.img 2>/dev/null || echo "/boot/initrd.img-$KVER")
+if [[ -f "$INITRD" ]]; then
+    if [[ "$BLACKLIST" -nt "$INITRD" ]]; then
+        echo "  initramfs ($INITRD) is older than $BLACKLIST -- rebuilding so the"
+        echo "  blacklist actually takes effect at early boot (2026-09-11 finding)"
+        update-initramfs -u -k "$KVER"
+        echo "  rebuilt initramfs for $KVER"
+        changed=1
+    else
+        echo "  initramfs is up to date relative to the blacklist file"
+    fi
+else
+    echo "  WARNING: could not find initramfs at $INITRD; check manually with 'update-initramfs -u'"
 fi
 
 echo "== 2. DMA/IOMMU boot args (cma=256M swiotlb=262144) =="

@@ -343,3 +343,30 @@ about whether `CONFIG_MTK_HDMI_RX` / an APU Kconfig symbol even exist in the tre
 
 No kernel build was attempted this pass — this was a scoping/recon step only, done by
 sparse-cloning `armbian/build`'s `config/` tree (no board/root access needed for this part).
+
+### 2026-09-11: IRQ 116 storm still firing despite blacklist file present — initramfs was stale
+
+**Symptom:** User reported poor stability on the current run even though all documented fixes
+(per the 2026-09-03 audit) were confirmed present on disk. Checked live dmesg/journalctl for
+the current boot and found the exact IRQ 116 storm from the 2026-04-11/06-27 entries firing
+~54 seconds after kernel start, module `tcpci_mt6360` autoloading and getting force-disabled by
+the kernel, just as before — even though `/etc/modprobe.d/disable-mt6360-tcpc.conf` existed.
+
+**Root cause:** `tcpci_mt6360.ko` is bundled directly inside `/boot/initrd.img-6.19.8-edge-genio`,
+and that initramfs carries its **own frozen copy** of `/etc/modprobe.d` (used by udev during
+early boot, before the real rootfs's `/etc/modprobe.d` is consulted at all). The blacklist file
+was written 2026-09-03; the initramfs was last built 2026-08-28 — five days *before* the
+blacklist existed. Writing the blacklist file alone does nothing until the initramfs is
+regenerated to include it; `scripts/apply-stability-fixes.sh` (2026-09-03) wrote the file but
+never rebuilt the initramfs, so the fix silently never took effect on this run.
+
+**Fix applied:** `scripts/apply-stability-fixes.sh` now compares the blacklist file's mtime
+against `/boot/initrd.img` (resolved via `uname -r`) and runs `update-initramfs -u -k $(uname -r)`
+whenever the initramfs is older. This makes the check self-healing on every future run instead
+of a one-time manual step.
+
+**Lesson for future debugging:** A modprobe blacklist (or any `/etc` config consumed by udev
+during early boot) is not actually "in effect" just because the file exists — check whether the
+running initramfs is newer than the file. `[[ "$file" -nt "$initrd" ]]` in a bash script is
+enough to catch this class of bug. Applies to any fix that touches early-boot module loading,
+not just this one.

@@ -398,3 +398,59 @@ stress-test for the AFBC/Panfrost watchdog-reset failure mode from the 2026-06-2
 (hard lockup after ~4h uptime under sustained EGL/browser load). `noafbc` is confirmed set in
 env for this session; watch for MTK WDT resets, `JOB_STATUS_INVALID_DATA_FAULT`, or a reboot
 with no shutdown log during this test.
+
+### 2026-09-13: Dev-tools audit + rescue kit set up on NX1TB
+
+**Context:** User was compiling DSDA-Launcher and Dolphin locally (`~/Documents/dsda-launcher`,
+`~/Documents/dolphin`) and wanted assurance that the board could compile "anything mainstream"
+after a reflash. Separately, wanted a "rescue" folder — initially considered an SD card, but
+moved to the NX1TB NVMe SSD (`/media/zach/NX1TB`, NTFS, 540G free vs. 201G free on the root
+ext4 fs).
+
+**Dev tools:** Core toolchain (gcc/clang, cmake, ninja, meson, autoconf/automake, Qt6 base,
+node/npm) was already present. Cross-checked against Dolphin's actual upstream build-dep list
+(`github.com/dolphin-emu/dolphin/wiki/Building-for-Linux`) and a general C/C++/Qt gap list;
+installed 34 missing packages (SDL2 dev headers, libtool, gdb/valgrind/strace/ltrace, Qt6
+Multimedia/Declarative/Wayland modules, libcubeb-dev, libgtest-dev, llvm-dev, etc. — full list
+in git history for this file's commit). `libqt6opengl6-dev` was requested but doesn't exist as
+a separate package anymore — `qt6-base-dev` now Breaks/Replaces it and pulls the OpenGL dev
+headers in directly via `libopengl-dev`; not a failure. `libsdl3-dev` and `libminizip-ng-dev`
+aren't in Ubuntu 24.04/noble's repos at all — Dolphin's CMake auto-vendors these from
+`Externals/` when the system package is absent, so no action was needed there.
+
+Also enabled `deb-src` in `/etc/apt/sources.list.d/ubuntu.sources` (deb822 format: added
+`deb-src` to the `Types:` line) so `sudo apt build-dep <package>` works generically against
+Ubuntu universe/multiverse going forward. Left `armbian.sources` deb-only since Armbian's own
+packages aren't the "mainstream open-source project" case this was for. Verified working via
+`apt-get build-dep --simulate vlc`.
+
+**Rescue kit:** Note — NX1TB already had an unrelated "rescue" convention in
+`NX1TB/files/` (rsync logs + corrupted-file lists from recovering photos/video off a failing
+SD card, dated 2026-09-08). Confirmed with user this new folder is a *board* rescue kit, not
+a continuation of that file-recovery work, before creating anything.
+
+Built `/media/zach/NX1TB/rescue/`:
+- `repo-snapshot/radxa-nio-12l-2026-09-13.tar.gz` — full tarball of this repo incl. `.git`.
+- `boot-config/armbianEnv.txt.2026-09-13` — known-working boot args.
+- `package-manifest/` — `kernel-state`, `apt-holds`, `manual-packages` (for
+  `apt install $(cat ...)` reinstall), and `dpkg-selections`, all dated 2026-09-13.
+- `README.md` explaining the above and why everything is a flat file/archive rather than an
+  extracted tree.
+
+**Rationale for flat files, not a live tree:** NX1TB is NTFS (`ntfs-3g`/fuseblk,
+`user_id=0,group_id=0` per mount options) — it cannot preserve Unix permissions, ownership,
+symlinks, or device/socket nodes. A raw extracted rootfs backup would silently lose that
+metadata. Archives (`tar.gz`) and plain text manifests round-trip through NTFS perfectly since
+the permission/symlink metadata lives inside the archive format itself, not the filesystem.
+Applies to anything else added to this kit later.
+
+**Known gap:** No kernel `.deb` files are backed up — `/var/cache/apt/archives` was already
+empty when this kit was built (Armbian doesn't retain them by default). If a future reflash
+lands on a different default kernel than `kernel-state-2026-09-13.txt` records, don't hunt for
+the old `.deb`s — re-check `docs/gpu-acceleration.md` and re-run `apply-stability-fixes.sh` /
+`hold-kernel.sh` from the extracted repo snapshot instead.
+
+**Maintenance:** Nothing in the rescue kit auto-refreshes. Re-run the capture commands (see
+`package-manifest/` file contents for the exact commands used) after the next stability fix,
+kernel rebuild, or board-config change so the manifests don't drift from what's actually
+running.
